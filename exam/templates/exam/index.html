@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <title>在线答题</title>
     {% load staticfiles %}
+    {% load dict_op %}
     <link rel="stylesheet" type="text/css" href="{% static 'exam/bootstrap.min.css' %}" />
     <script src="{% static 'exam/jquery-3.2.1.min.js' %}"></script>
     <script src="{% static 'exam/bootstrap.min.js' %}"></script>
@@ -19,7 +20,7 @@
 <div class="container">
     {% for question in questions %}
         <label>{{ question.material_ids }}</label>
-        {% for option in materials.1 %}
+        {% for option in materials|key:question.id %}
             <label class="radio-inline">
                 <input type="radio"  value="1" name="options">{{ option }}
             </label>
