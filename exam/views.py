@@ -20,9 +20,15 @@ def index(request):
     if len(question_ids) > 0:
         questions = Question.objects.filter(id__in=question_ids)
         for question in questions:
-            materials[question.id] = question.answer_options.split(",")
-
-    # images
+            materials[question.id] = {"options": question.answer_options.split(",")}
+            # images
+            image_ids = question.material_ids.split(",")
+            image_objs = MaterialImage.objects.filter(id__in=image_ids)
+            images = []
+            for image in image_objs:
+                images.append(image.image)
+            materials[question.id].update({"images": images})
+    #
 
     context = {"exam": exam, "questions": questions, "materials": materials}
     return render(request, 'exam/index.html', context)

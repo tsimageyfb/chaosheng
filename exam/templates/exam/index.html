@@ -19,12 +19,17 @@
 
 <div class="container">
     {% for question in questions %}
-        <label>{{ question.material_ids }}</label>
-        {% for option in materials|key:question.id %}
+        {% with material=materials|key:question.id %}
+        {% for option in material.options %}
             <label class="radio-inline">
                 <input type="radio"  value="1" name="options">{{ option }}
             </label>
         {% endfor %}
+
+        {% for image in material.images %}
+            <img src="/{{ image }}">
+        {% endfor %}
+        {% endwith %}
     {% endfor %}
 </div>
 
