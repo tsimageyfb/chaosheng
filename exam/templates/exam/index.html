@@ -20,17 +20,19 @@
 <div class="container">
     {% for question in questions %}
         <hr>
-        <label>{{ forloop.counter }}、</label>
+        {% with index=forloop.counter %}
+        <label>{{ index }}、</label>
         {% with material=materials|key:question.id %}
         {% for option in material.options %}
             <label class="radio-inline">
-                <input type="radio"  value="1" name="options">{{ option }}
+                <input type="radio"  value="1" name="radio-question-{{ index }}">{{ option }}
             </label>
         {% endfor %}
         <br>
         {% for image in material.images %}
             <img style="width: 150px;height: 150px;margin-right: 20px" src="/statics/{{ image }}">
         {% endfor %}
+        {% endwith %}
         {% endwith %}
     {% endfor %}
 </div>
