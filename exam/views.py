@@ -32,3 +32,9 @@ def index(request):
 
     context = {"exam": exam, "questions": questions, "materials": materials}
     return render(request, 'exam/index.html', context)
+
+
+def score(request):
+    context = {}
+    return render(request, 'exam/score.html', context)
+

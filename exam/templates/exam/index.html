@@ -39,9 +39,15 @@
 
 <div class="container text-center">
     <hr>
-    <button class="btn btn-primary">提交答卷</button>
+    <button id="btn-commit" class="btn btn-primary">提交答卷</button>
 </div>
 
 </body>
 
 </html>
+
+<script>
+    $('#btn-commit').on('click', function () {
+        window.location.href = "score";
+    })
+</script>

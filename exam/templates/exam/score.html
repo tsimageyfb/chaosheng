@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>答题成绩</title>
+    {% load staticfiles %}
+    {% load dict_op %}
+    <link rel="stylesheet" type="text/css" href="{% static 'exam/bootstrap.min.css' %}" />
+    <script src="{% static 'exam/jquery-3.2.1.min.js' %}"></script>
+    <script src="{% static 'exam/bootstrap.min.js' %}"></script>
+    <script src="{% static 'exam/highcharts.js' %}"></script>
+</head>
+
+<body>
+
+<div class="container text-center">
+    <h2>答题成绩</h2>
+</div>
+
+<div class="container">
+    <div id="chart-score" style="min-width:400px;height:400px"></div>
+</div>
+
+</body>
+
+</html>
+
+<script>
+    var chart = Highcharts.chart('chart-score', {
+    chart: {
+        spacing : [40, 0 , 40, 0]
+    },
+    title: {
+        floating:true,
+        text: '得分：80'
+    },
+    tooltip: {
+        pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+    },
+    plotOptions: {
+        pie: {
+            allowPointSelect: true,
+            cursor: 'pointer',
+            dataLabels: {
+                enabled: false,
+                format: '<b>{point.name}</b>: {point.percentage:.1f} %',
+                style: {
+                    color: (Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black'
+                }
+            }
+        }
+    },
+    series: [{
+        type: 'pie',
+        innerSize: '80%',
+        name: '正确情况',
+        data: [
+            ['正确',   80],
+            ['错误',   20]
+        ]
+    }]
+}, function(c) { // 图表初始化完毕后的会掉函数
+    // 环形图圆心
+    var centerY = c.series[0].center[1],
+        titleHeight = parseInt(c.title.styles.fontSize);
+    // 动态设置标题位置
+    c.setTitle({
+        y:centerY + titleHeight/2
+    });
+});
+</script>
