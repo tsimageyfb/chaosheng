@@ -19,6 +19,8 @@
 
 <div class="container">
     {% for question in questions %}
+        <hr>
+        <label>{{ forloop.counter }}、</label>
         {% with material=materials|key:question.id %}
         {% for option in material.options %}
             <label class="radio-inline">
