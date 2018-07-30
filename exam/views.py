@@ -6,7 +6,12 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.views.decorators.csrf import csrf_exempt
 from questionnaire import http
 import json, datetime, time
-from .models import Exam, Question, MaterialImage
+from .models import Exam, Question, MaterialImage, User
+
+
+def entry(request):
+    context = {}
+    return render(request, 'exam/entry.html', context)
 
 
 def index(request):
@@ -38,3 +43,12 @@ def score(request):
     context = {}
     return render(request, 'exam/score.html', context)
 
+
+@csrf_exempt
+def ajax_create_user(request):
+    phone = request.POST['phone']
+    user_type = request.POST['user_type']
+    address = request.POST['address']
+
+    ob = User.objects.create(phone=phone, user_type=user_type, address=address)
+    return HttpResponse(ob.id)

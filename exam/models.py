@@ -40,3 +40,25 @@ class MaterialImage(models.Model):
 
     created_at = models.DateTimeField(auto_now_add=True, editable=False)
     updated_at = models.DateTimeField(auto_now=True, editable=False)
+
+
+class User(models.Model):
+    name = models.CharField(max_length=24, default='', blank=True)
+    account = models.CharField(max_length=24, default='', blank=True)
+    user_type = models.IntegerField(default=0)  # 0-各代表队，1-场内观众，2-场外观众
+    phone = models.CharField(max_length=18, default='', blank=True)
+    address = models.CharField(max_length=128, default='', blank=True)
+
+    created_at = models.DateTimeField(auto_now_add=True, editable=False)
+    updated_at = models.DateTimeField(auto_now=True, editable=False)
+
+
+class Score(models.Model):
+    exam_id = models.IntegerField()
+    user_id = models.IntegerField()
+    answer = models.CharField(max_length=128, default='', blank=True)
+    score = models.IntegerField()
+    elapsed_seconds = models.IntegerField(default=0, blank=True)
+
+    created_at = models.DateTimeField(auto_now_add=True, editable=False)
+    updated_at = models.DateTimeField(auto_now=True, editable=False)

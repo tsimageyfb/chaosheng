@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>答题入口</title>
+    {% load staticfiles %}
+    {% load dict_op %}
+    <link rel="stylesheet" type="text/css" href="{% static 'exam/bootstrap.min.css' %}" />
+    <script src="{% static 'exam/jquery-3.2.1.min.js' %}"></script>
+    <script src="{% static 'exam/bootstrap.min.js' %}"></script>
+    <script src="{% static 'exam/highcharts.js' %}"></script>
+</head>
+
+<body>
+<div class="container text-center">
+    <h1>填写信息</h1>
+</div>
+
+<div class="container">
+
+</div>
+
+<div class="container text-center">
+    <hr>
+    <label>手机号码<font style="color: orangered;">*</font>: <input id="input-phone"></label>
+    <br>
+
+    <label>观众类别<font style="color: orangered;">*</font>: </label>
+    <label class="radio-inline">
+        <input id="input-side-in" type="radio" name="radio-side" value="1">场内观众
+    </label>
+    <label class="radio-inline">
+        <input id="input-side-out" type="radio" name="radio-side" value="2">场外观众
+    </label>
+    <br>
+    <textarea id="text-addr" style="width: 300px;height: 100px;" placeholder="请填写奖品寄送地址和联系人" hidden></textarea>
+    <br>
+    <button id="btn-begin-answer" class="btn btn-primary">提交并开始答题</button>
+</div>
+
+</body>
+
+</html>
+
+<script>
+    $("[name='radio-side']").click(function () {
+        var side_click = $(this).val();
+        if (side_click === "1") {
+            $('#text-addr').hide();
+        }
+        if (side_click === "2") {
+            $('#text-addr').show();
+        }
+    });
+
+
+    $('#btn-begin-answer').on('click', function () {
+        // judge can submit
+        var phone = $('#input-phone').val();
+        if (phone === '') {
+            alert('手机号码不可不填');
+            return;
+        }
+        var radio_side = $("[name='radio-side']").filter(":checked");
+        if (radio_side.length === 0) {
+            alert('请选择观众类型');
+            return;
+        }
+        var side = radio_side.val();
+        var addr = $('#text-addr').val();
+        $.ajax({
+            url: "/exam/ajax-create-user",
+            method: "POST",
+            data: {phone: phone, user_type: side, address: addr},
+            success: function (msg) {
+                window.location.href = "answer?user="+msg;
+            },
+            error: function(jqXHR, textStatus) {
+                alert("Request failed: " + textStatus);
+            }
+        });
+
+    })
+</script>
