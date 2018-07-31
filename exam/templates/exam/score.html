@@ -28,13 +28,15 @@
 </html>
 
 <script>
+    var count = {{ count }};
+    var right = {{ right }};
     var chart = Highcharts.chart('chart-score', {
     chart: {
         spacing : [40, 0 , 40, 0]
     },
     title: {
         floating:true,
-        text: '得分：80'
+        text: '得分：'+(right * 2)
     },
     tooltip: {
         pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
@@ -57,8 +59,8 @@
         innerSize: '80%',
         name: '正确情况',
         data: [
-            ['正确',   80],
-            ['错误',   20]
+            ['正确',   right],
+            ['错误',   count-right]
         ]
     }]
 }, function(c) { // 图表初始化完毕后的会掉函数

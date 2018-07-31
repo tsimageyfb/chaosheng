@@ -6,7 +6,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.views.decorators.csrf import csrf_exempt
 from questionnaire import http
 import json, datetime, time
-from .models import Exam, Question, MaterialImage, User
+from .models import Exam, Question, MaterialImage, User, Score
 
 
 def entry(request):
@@ -15,6 +15,9 @@ def entry(request):
 
 
 def index(request):
+    # user
+    user_id = request.GET['user']
+
     # exam
     exam = Exam.objects.get(id=1)
 
@@ -35,12 +38,19 @@ def index(request):
             materials[question.id].update({"images": images})
     #
 
-    context = {"exam": exam, "questions": questions, "materials": materials}
+    context = {"exam": exam, "questions": questions, "materials": materials, "user": user_id}
     return render(request, 'exam/index.html', context)
 
 
 def score(request):
-    context = {}
+    score_id = request.GET['id']
+    ob = Score.objects.get(id=score_id)
+    count = 0
+    right = 0
+    if ob is not None:
+        count = len(ob.answer.split(","))
+        right = ob.score
+    context = {"count": count, "right": right}
     return render(request, 'exam/score.html', context)
 
 
@@ -51,4 +61,25 @@ def ajax_create_user(request):
     address = request.POST['address']
 
     ob = User.objects.create(phone=phone, user_type=user_type, address=address)
+    return HttpResponse(ob.id)
+
+
+@csrf_exempt
+def ajax_post_answer(request):
+    user = request.POST['user']
+    answer_raw = request.POST['answer']
+    answers = answer_raw.split(",")
+    correct_answers = []
+    exam = Exam.objects.get(id=1)
+    question_ids = exam.questions.split(",")
+    for qid in question_ids:
+        question = Question.objects.get(id=qid)
+        correct_answers.append(question.correct_answer)
+
+    answer_score = 0
+    for k in range(len(answers)):
+        if answers[k] == correct_answers[k]:
+            answer_score += 1
+
+    ob = Score.objects.create(exam_id=1, user_id=user, answer=answer_raw, score=answer_score)
     return HttpResponse(ob.id)

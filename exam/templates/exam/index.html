@@ -25,9 +25,11 @@
         <label>{{ index }}、</label>
         {% with material=materials|key:question.id %}
         {% for option in material.options %}
+            {% with option_index=forloop.counter %}
             <label class="radio-inline">
-                <input type="radio"  value="1" name="radio-question-{{ index }}">{{ option }}
+                <input type="radio"  value="{{ option_index }}" name="radio-question-{{ index }}">{{ option }}
             </label>
+            {% endwith %}
         {% endfor %}
         <br>
         {% for image in material.images %}
@@ -41,6 +43,7 @@
 <div class="container text-center">
     <hr>
     <button id="btn-commit" class="btn btn-primary">提交答卷</button>
+    <br>
 </div>
 
 </body>
@@ -48,7 +51,27 @@
 </html>
 
 <script>
+    var user_id = {{ user }};
+
+    var answer = [];
     $('#btn-commit').on('click', function () {
-        window.location.href = "/exam/score";
+        {% for question in questions %}
+            {% with index=forloop.counter %}
+                var radio_check = $("[name='radio-question-{{ index }}']").filter(":checked");
+                answer.push(radio_check.val());
+            {% endwith %}
+        {% endfor %}
+
+        $.ajax({
+            url: "/exam/ajax-post-answer",
+            method: "POST",
+            data: {answer: answer.join(","), user: user_id},
+            success: function (msg) {
+                window.location.href = "/exam/score?id="+msg;
+            },
+            error: function(jqXHR, textStatus) {
+                alert("Request failed: " + textStatus);
+            }
+        });
     })
 </script>

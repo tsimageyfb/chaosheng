@@ -6,4 +6,5 @@ urlpatterns = [
     url(r'^answer/$', views.index, name='answer'),
     url(r'^score/$', views.score, name='score'),
     url(r'^ajax-create-user', views.ajax_create_user, name='create-user'),
+    url(r'^ajax-post-answer', views.ajax_post_answer, name='post-answer'),
 ]

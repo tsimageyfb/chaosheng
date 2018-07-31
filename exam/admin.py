@@ -21,8 +21,12 @@ class UserAdmin(admin.ModelAdmin):
     list_display = ('id', 'phone', 'name', 'account')
 
 
+class ScoreAdmin(admin.ModelAdmin):
+    list_display = ('id', 'exam_id', 'user_id', 'score')
+
+
 admin.site.register(Question, QuestionAdmin)
 admin.site.register(Exam, ExamAdmin)
 admin.site.register(MaterialImage, MaterialImageAdmin)
 admin.site.register(User, UserAdmin)
-admin.site.register(Score)
+admin.site.register(Score, ScoreAdmin)
