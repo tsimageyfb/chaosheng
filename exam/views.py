@@ -10,16 +10,17 @@ from .models import Exam, Question, MaterialImage, User, Score
 
 
 def entry(request):
-    context = {}
+    context = {"exam_id": 1}
     return render(request, 'exam/entry.html', context)
 
 
 def index(request):
-    # user
+    # params
     user_id = request.GET['user']
+    exam_id = request.GET['exam']
 
     # exam
-    exam = Exam.objects.get(id=1)
+    exam = Exam.objects.get(id=exam_id)
 
     # questions
     questions = []
@@ -38,7 +39,7 @@ def index(request):
             materials[question.id].update({"images": images})
     #
 
-    context = {"exam": exam, "questions": questions, "materials": materials, "user": user_id}
+    context = {"exam": exam, "questions": questions, "materials": materials, "user": user_id, "exam_id": exam_id}
     return render(request, 'exam/index.html', context)
 
 
@@ -67,6 +68,7 @@ def ajax_create_user(request):
 @csrf_exempt
 def ajax_post_answer(request):
     user = request.POST['user']
+    exam_id = request.POST['exam']
     answer_raw = request.POST['answer']
     answers = answer_raw.split(",")
     correct_answers = []
@@ -81,5 +83,5 @@ def ajax_post_answer(request):
         if answers[k] == correct_answers[k]:
             answer_score += 1
 
-    ob = Score.objects.create(exam_id=1, user_id=user, answer=answer_raw, score=answer_score)
+    ob = Score.objects.create(exam_id=exam_id, user_id=user, answer=answer_raw, score=answer_score)
     return HttpResponse(ob.id)

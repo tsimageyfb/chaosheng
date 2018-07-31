@@ -6,12 +6,12 @@ from django.db import models
 
 class Question(models.Model):
     # 1-单选
-    question_type = models.IntegerField()
+    question_type = models.IntegerField(default='1')
     description = models.CharField(max_length=128, default='', blank=True)
     # 选择题的各选项，半角逗号隔开
-    answer_options = models.CharField(max_length=64)
+    answer_options = models.CharField(max_length=64, default='正常,良性,恶性')
     # 1-材料纯图片
-    material_type = models.IntegerField()
+    material_type = models.IntegerField(default='1')
     # 材料列表，半角逗号隔开
     material_ids = models.CharField(max_length=64)
     # 正确答案，半角逗号隔开

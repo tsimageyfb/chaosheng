@@ -80,7 +80,7 @@
             method: "POST",
             data: {phone: phone, user_type: side, address: addr},
             success: function (msg) {
-                window.location.href = "answer?user="+msg;
+                window.location.href = "answer?exam={{ exam_id }}&user="+msg;
             },
             error: function(jqXHR, textStatus) {
                 alert("Request failed: " + textStatus);
