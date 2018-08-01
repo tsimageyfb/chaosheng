@@ -55,6 +55,15 @@ def score(request):
     return render(request, 'exam/score.html', context)
 
 
+def statistics(request):
+    exam_id = request.GET['exam']
+    exam = Exam.objects.get(id=exam_id)
+    scores = Score.objects.filter(exam_id=exam_id)
+
+    context = {"exam": exam, "scores": scores}
+    return render(request, 'exam/statistics.html', context)
+
+
 @csrf_exempt
 def ajax_create_user(request):
     phone = request.POST['phone']

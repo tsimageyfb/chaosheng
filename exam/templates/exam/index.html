@@ -59,7 +59,11 @@
         {% for question in questions %}
             {% with index=forloop.counter %}
                 var radio_check = $("[name='radio-question-{{ index }}']").filter(":checked");
-                answer.push(radio_check.val());
+                var each_answer = radio_check.val();
+                if (radio_check.length === 0) {
+                    each_answer = "0";
+                }
+                answer.push(each_answer);
             {% endwith %}
         {% endfor %}
 

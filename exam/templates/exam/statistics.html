@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>答题统计</title>
+    {% load staticfiles %}
+    {% load dict_op %}
+    <link rel="stylesheet" type="text/css" href="{% static 'exam/bootstrap.min.css' %}" />
+    <script src="{% static 'exam/jquery-3.2.1.min.js' %}"></script>
+    <script src="{% static 'exam/bootstrap.min.js' %}"></script>
+    <script src="{% static 'exam/highcharts.js' %}"></script>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+</head>
+
+<body>
+
+<div class="container text-center">
+    <h2>{{ exam.title }}-答题统计</h2>
+</div>
+
+<div class="container">
+    <table class="table table-striped">
+        <tr>
+            <th>代表队</th>
+            <th>电话</th>
+            <th>得分</th>
+        </tr>
+        {% for score in scores %}
+            <tr>
+            <td>{{ score.account }}</td>
+            <td>{{ score.phone }}</td>
+            <td>{{ score.score }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+</div>
+
+</body>
+
+</html>
+
+<script>
+
+</script>
