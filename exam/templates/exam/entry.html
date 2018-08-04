@@ -27,8 +27,24 @@
 
 <div class="container text-center">
     <hr>
-    <label>手机号码<font style="color: orangered;">*</font>: <input id="input-phone"></label>
+    <label>您的姓名<font style="color: orangered;">*</font>: <input id="input-name"></label>
     <br>
+    <label>您的手机号码<font style="color: orangered;">*</font>: <input id="input-phone"></label>
+    <hr>
+
+    <label>您的工作单位: <input id="input-workplace"></label>
+    <br>
+    <label>您的年资: </label>
+    <div class="dropdown" style="display: inline">
+        <button id="btn-new-atom-key" class="btn btn-default btn-xs" type="button" data-toggle="dropdown" data-key="">请选择<span class="caret"></span></button>
+        <ul class="dropdown-menu">
+            <li class="li-new-atom-key" data-key="{{ key.obj }}"><a>初级医师</a></li>
+            <li class="li-new-atom-key" data-key="{{ key.obj }}"><a>中级医师</a></li>
+            <li class="li-new-atom-key" data-key="{{ key.obj }}"><a>高级医师</a></li>
+            <li class="li-new-atom-key" data-key="{{ key.obj }}"><a>其他</a></li>
+        </ul>
+    </div>
+    <hr>
 
     <label>观众类别<font style="color: orangered;">*</font>: </label>
     <label class="radio-inline">
