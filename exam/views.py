@@ -7,9 +7,7 @@ from django.views.decorators.csrf import csrf_exempt
 from questionnaire import http
 import json, datetime, time
 from .models import Exam, Question, MaterialImage, User, Score
-from .compute import compute_score
-
-ACCOUNT_ROBOT = 'robot'
+from .tools import compute_score, get_robot_user
 
 
 def entry(request):
@@ -108,12 +106,7 @@ def robot_tick_answer(request):
     answer_dic = {question_id: this_answer}
     answer = json.dumps(answer_dic)
 
-    robot_user = User.objects.filter(account=ACCOUNT_ROBOT)
-    if len(robot_user) == 0:
-        robot_user = User.objects.create(account=ACCOUNT_ROBOT)
-    else:
-        robot_user = robot_user[0]
-
+    robot_user = get_robot_user()
     robot_score = Score.objects.filter(exam_id=exam_id, user_id=robot_user.id)
     if len(robot_score) == 0:
         Score.objects.create(exam_id=exam_id, user_id=robot_user.id, answer=answer)
@@ -126,15 +119,17 @@ def robot_tick_answer(request):
         robot_score.answer = json.dumps(answer_new_dic)
         robot_score.save()
 
-    return HttpResponse(http.wrap_ok_response(json.loads(robot_score.answer)), content_type='application/json')
+    return http.wrap_ok_response(json.loads(robot_score.answer))
 
 
 @csrf_exempt
 def robot_submit_answer(request):
     exam_id = request.POST['exam']
-    robot_score = Score.objects.filter(exam_id=exam_id)
+
+    robot_user = get_robot_user()
+    robot_score = Score.objects.filter(exam_id=exam_id, user_id=robot_user.id)
     if len(robot_score) == 0:
-        return HttpResponse(http.wrap_bad_response(-1, 'not found this exam'), content_type='application/json')
+        return http.wrap_bad_response(-1, 'not found this exam')
     else:
         robot_score = robot_score[0]
         robot_score.submitted = True
@@ -147,4 +142,16 @@ def robot_submit_answer(request):
         robot_score.score = point
         robot_score.save()
 
-    return HttpResponse(http.wrap_ok_response({"score": point}), content_type='application/json')
+    return http.wrap_ok_response({"score": point})
+
+
+@csrf_exempt
+def robot_get_progress(request):
+    exam_id = request.GET['exam']
+    robot_user = get_robot_user()
+    robot_score = Score.objects.filter(exam_id=exam_id, user_id=robot_user.id)
+    if len(robot_score) == 0:
+        return http.wrap_ok_response({})
+    else:
+        robot_score = robot_score[0]
+        return http.wrap_ok_response(json.loads(robot_score.answer))

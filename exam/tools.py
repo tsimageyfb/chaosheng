@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
-from .models import Exam, Question
+from .models import Exam, Question, User
+
+ACCOUNT_ROBOT = 'robot'
 
 
 def compute_score(exam_id, answers_dic):
@@ -18,5 +20,13 @@ def compute_score(exam_id, answers_dic):
         if key in answers_right:
             if answers_right[key] == val:
                 score += 1
-
     return score
+
+
+def get_robot_user():
+    robot_user = User.objects.filter(account=ACCOUNT_ROBOT)
+    if len(robot_user) == 0:
+        robot_user = User.objects.create(account=ACCOUNT_ROBOT)
+    else:
+        robot_user = robot_user[0]
+    return robot_user
