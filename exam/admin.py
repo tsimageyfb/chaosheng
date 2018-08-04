@@ -22,7 +22,7 @@ class UserAdmin(admin.ModelAdmin):
 
 
 class ScoreAdmin(admin.ModelAdmin):
-    list_display = ('id', 'exam_id', 'user_id', 'score')
+    list_display = ('id', 'exam_id', 'user_id', 'score', 'submitted')
 
 
 admin.site.register(Question, QuestionAdmin)

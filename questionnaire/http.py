@@ -6,6 +6,14 @@ import json
 from questionnaire import settings
 
 
+def wrap_ok_response(result):
+    return json.dumps({'code': 0, 'message': '', 'data': result})
+
+
+def wrap_bad_response(code, msg):
+    return json.dumps({'code': code, 'message': msg})
+
+
 def do_get(url):
     data = {}
     conn = httplib.HTTPConnection(settings.HTTP_HOST)

@@ -7,6 +7,9 @@ from django.views.decorators.csrf import csrf_exempt
 from questionnaire import http
 import json, datetime, time
 from .models import Exam, Question, MaterialImage, User, Score
+from .compute import compute_score
+
+ACCOUNT_ROBOT = 'robot'
 
 
 def entry(request):
@@ -94,3 +97,54 @@ def ajax_post_answer(request):
 
     ob = Score.objects.create(exam_id=exam_id, user_id=user, answer=answer_raw, score=answer_score)
     return HttpResponse(ob.id)
+
+
+@csrf_exempt
+def robot_tick_answer(request):
+    exam_id = request.POST['exam']
+    question_id = request.POST['question']
+    this_answer = request.POST['answer']
+
+    answer_dic = {question_id: this_answer}
+    answer = json.dumps(answer_dic)
+
+    robot_user = User.objects.filter(account=ACCOUNT_ROBOT)
+    if len(robot_user) == 0:
+        robot_user = User.objects.create(account=ACCOUNT_ROBOT)
+    else:
+        robot_user = robot_user[0]
+
+    robot_score = Score.objects.filter(exam_id=exam_id, user_id=robot_user.id)
+    if len(robot_score) == 0:
+        Score.objects.create(exam_id=exam_id, user_id=robot_user.id, answer=answer)
+    else:
+        robot_score = robot_score[0]
+        answer_new_dic = {}
+        if robot_score.answer != '':
+            answer_new_dic.update(json.loads(robot_score.answer))
+        answer_new_dic.update(answer_dic)
+        robot_score.answer = json.dumps(answer_new_dic)
+        robot_score.save()
+
+    return HttpResponse(http.wrap_ok_response(json.loads(robot_score.answer)), content_type='application/json')
+
+
+@csrf_exempt
+def robot_submit_answer(request):
+    exam_id = request.POST['exam']
+    robot_score = Score.objects.filter(exam_id=exam_id)
+    if len(robot_score) == 0:
+        return HttpResponse(http.wrap_bad_response(-1, 'not found this exam'), content_type='application/json')
+    else:
+        robot_score = robot_score[0]
+        robot_score.submitted = True
+        # count score
+        if robot_score.answer == '':
+            point = 0
+        else:
+            point = compute_score(exam_id, json.loads(robot_score.answer))
+
+        robot_score.score = point
+        robot_score.save()
+
+    return HttpResponse(http.wrap_ok_response({"score": point}), content_type='application/json')
