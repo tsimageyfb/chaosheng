@@ -7,7 +7,7 @@ from django.views.decorators.csrf import csrf_exempt
 from questionnaire import http
 import json, datetime, time
 from .models import Exam, Question, MaterialImage, User, Score
-from .tools import compute_score, get_robot_user
+from .tools import compute_score, get_robot_user, get_each_team_progress, ACCOUNT_TEAMS
 
 
 def entry(request):
@@ -155,3 +155,13 @@ def robot_get_progress(request):
     else:
         robot_score = robot_score[0]
         return http.wrap_ok_response(json.loads(robot_score.answer))
+
+
+@csrf_exempt
+def team_get_progress(request):
+    exam_id = request.GET['exam']
+    progress = []
+    for account in ACCOUNT_TEAMS:
+        each_progress = get_each_team_progress(exam_id, account)
+        progress.append(each_progress)
+    return http.wrap_ok_response(progress)
