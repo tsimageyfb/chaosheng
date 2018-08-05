@@ -3,6 +3,7 @@ from exam import views
 
 urlpatterns = [
     url(r'^$', views.entry, name='entry'),
+    url(r'^team/$', views.entry_team, name='team'),
     url(r'^answer/$', views.index, name='answer'),
     url(r'^score/$', views.score, name='score'),
     url(r'^statistics/$', views.statistics, name='statistics'),

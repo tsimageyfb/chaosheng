@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>答题入口</title>
+    {% load staticfiles %}
+    {% load dict_op %}
+    <link rel="stylesheet" type="text/css" href="{% static 'exam/bootstrap.min.css' %}" />
+    <script src="{% static 'exam/jquery-3.2.1.min.js' %}"></script>
+    <script src="{% static 'exam/bootstrap.min.js' %}"></script>
+    <script src="{% static 'exam/highcharts.js' %}"></script>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+</head>
+
+<style>
+</style>
+
+<body>
+<div class="container text-center">
+    <h1>填写信息</h1>
+</div>
+
+<div class="container">
+
+</div>
+
+<div class="container text-center">
+    <hr>
+    <label>代表队<font style="color: orangered;">*</font>: </label>
+    <div class="dropdown" style="display: inline">
+        <button id="btn-team" class="btn btn-default btn-xs" type="button" data-toggle="dropdown" data-key="" style="width: 100px">请选择<span class="caret"></span></button>
+        <ul class="dropdown-menu">
+            {% for key, val in team.items %}
+                <li class="li-team" data-key="{{ key }}"><a>{{ val }}</a></li>
+            {% endfor %}
+        </ul>
+    </div>
+    <hr>
+    <button id="btn-begin-answer" class="btn btn-primary">提交并开始答题</button>
+</div>
+
+</body>
+
+</html>
+
+<script>
+    $('.li-team').on('click', function () {
+        var team = $(this).text();
+        $('#btn-team').text(team);
+        $('#btn-team').data('key', $(this).data('key'))
+    });
+
+    $('#btn-begin-answer').on('click', function () {
+        var account = $('#btn-team').data('key');
+        if (account === "") {
+            alert("请选择代表队");
+            return;
+        }
+
+        $.ajax({
+            url: "/exam/ajax-create-user",
+            method: "POST",
+            data: {account: account, user_type: 0},
+            success: function (msg) {
+                window.location.href = "/exam/answer?exam={{ exam_id }}&account="+account;
+            },
+            error: function(jqXHR, textStatus) {
+                alert("Request failed: " + textStatus);
+            }
+        });
+    })
+
+</script>

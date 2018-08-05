@@ -18,7 +18,7 @@ class MaterialImageAdmin(admin.ModelAdmin):
 
 
 class UserAdmin(admin.ModelAdmin):
-    list_display = ('id', 'phone', 'name', 'account')
+    list_display = ('id', 'phone', 'name', 'account', 'user_type')
 
 
 class ScoreAdmin(admin.ModelAdmin):

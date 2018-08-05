@@ -2,7 +2,7 @@
 from __future__ import unicode_literals
 
 from django.shortcuts import render
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from questionnaire import http
 import json
@@ -14,6 +14,11 @@ from .tools import AUDIENCE_KEY, AUDIENCE_TYPE, get_audience_rank, get_audience_
 def entry(request):
     context = {"exam_id": 1}
     return render(request, 'exam/entry.html', context)
+
+
+def entry_team(request):
+    context = {"exam_id": 1, "team": NAME_TEAMS}
+    return render(request, 'exam/team.html', context)
 
 
 def index(request):
@@ -69,12 +74,26 @@ def statistics(request):
 
 @csrf_exempt
 def ajax_create_user(request):
-    phone = request.POST['phone']
-    user_type = request.POST['user_type']
-    address = request.POST['address']
+    phone = request.POST.get('phone', '')
+    user_type = request.POST.get('user_type', 0)
+    address = request.POST.get('address', '')
+    account = request.POST.get('account', '')
 
-    ob = User.objects.create(phone=phone, user_type=user_type, address=address)
-    return HttpResponse(ob.id)
+    if account != '':
+        # 是代表队
+        user = User.objects.filter(account=account)
+        if len(user) == 0:
+            user = User.objects.create(account=account, user_type=0)
+        else:
+            user = user[0]
+    else:
+        # 是观众
+        user = User.objects.filter(phone=phone, user_type=user_type)
+        if len(user) == 0:
+            user = User.objects.create(phone=phone, user_type=user_type, address=address)
+        else:
+            user = user[0]
+    return HttpResponse(user.id)
 
 
 @csrf_exempt
