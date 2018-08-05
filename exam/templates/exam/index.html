@@ -27,7 +27,7 @@
         {% for option in material.options %}
             {% with option_index=forloop.counter %}
             <label class="radio-inline">
-                <input type="radio"  value="{{ option_index }}" name="radio-question-{{ index }}">{{ option }}
+                <input class="radio-option" type="radio"  value="{{ option_index }}" name="radio-question-{{ index }}" data-index="{{ index }}">{{ option }}
             </label>
             {% endwith %}
         {% endfor %}
@@ -54,6 +54,26 @@
     var user_id = "{{ user }}";
     var account = "{{ account }}";
     var exam_id = "{{ exam_id }}";
+
+    // 是代表队，才监听答题进展
+    if (account !== "") {
+        $('.radio-option').on('click', function () {
+           var radio = $(this);
+           var question = radio.data('index');
+           var answer = radio.val();
+           $.ajax({
+            url: "/exam/team-tick-answer",
+            method: "POST",
+            data: {exam: exam_id, account: account, question: question, answer: answer},
+            success: function (msg) {
+            },
+            error: function(jqXHR, textStatus) {
+                alert("Request failed: " + textStatus);
+            }
+        });
+        });
+    }
+
 
     var answer = [];
     $('#btn-commit').on('click', function () {
