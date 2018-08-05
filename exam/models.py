@@ -58,6 +58,7 @@ class Score(models.Model):
     user_id = models.IntegerField()
     answer = models.CharField(max_length=512, default='', blank=True)
     score = models.IntegerField(default=0, blank=True)
+    begin_at = models.DateTimeField(auto_now_add=True, editable=True)
     elapsed_seconds = models.IntegerField(default=0, blank=True)
     submitted = models.BooleanField(default=False)
 

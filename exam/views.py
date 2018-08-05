@@ -9,6 +9,7 @@ import json
 from .models import Exam, Question, MaterialImage, User, Score
 from .tools import compute_score, get_robot_user, get_each_team_progress, get_team_user, ACCOUNT_TEAMS, ACCOUNT_ROBOT
 from .tools import AUDIENCE_KEY, AUDIENCE_TYPE, get_audience_rank, get_audience_progress, NAME_TEAMS
+import django.utils.timezone as timezone
 
 
 def entry(request):
@@ -136,6 +137,8 @@ def robot_tick_answer(request):
         answer_new_dic = {}
         if robot_score.answer != '':
             answer_new_dic.update(json.loads(robot_score.answer))
+        else:
+            robot_score.begin_at = timezone.now()
         answer_new_dic.update(answer_dic)
         robot_score.answer = json.dumps(answer_new_dic)
         robot_score.save()
@@ -160,6 +163,7 @@ def robot_submit_answer(request):
         else:
             point = compute_score(exam_id, json.loads(robot_score.answer))
 
+        robot_score.elapsed_seconds = int((timezone.now()-robot_score.begin_at).total_seconds())
         robot_score.score = point
         robot_score.save()
 
@@ -254,12 +258,14 @@ def team_tick_answer(request):
     team_user = get_team_user(account)
     team_score = Score.objects.filter(exam_id=exam_id, user_id=team_user.id)
     if len(team_score) == 0:
-        Score.objects.create(exam_id=exam_id, user_id=team_user.id, answer=answer)
+        team_score = Score.objects.create(exam_id=exam_id, user_id=team_user.id, answer=answer)
     else:
         team_score = team_score[0]
         answer_new_dic = {}
         if team_score.answer != '':
             answer_new_dic.update(json.loads(team_score.answer))
+        else:
+            team_score.begin_at = timezone.now()
         answer_new_dic.update(answer_dic)
         team_score.answer = json.dumps(answer_new_dic)
         team_score.save()
@@ -285,6 +291,7 @@ def team_submit_answer(request):
         else:
             point = compute_score(exam_id, json.loads(team_score.answer))
 
+        team_score.elapsed_seconds = int((timezone.now()-team_score.begin_at).total_seconds())
         team_score.score = point
         team_score.save()
 
