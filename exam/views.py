@@ -7,7 +7,7 @@ from django.views.decorators.csrf import csrf_exempt
 from questionnaire import http
 import json
 from .models import Exam, Question, MaterialImage, User, Score
-from .tools import compute_score, get_robot_user, get_each_team_progress, ACCOUNT_TEAMS
+from .tools import compute_score, get_robot_user, get_each_team_progress, get_team_user, ACCOUNT_TEAMS
 
 
 def entry(request):
@@ -17,7 +17,8 @@ def entry(request):
 
 def index(request):
     # params
-    user_id = request.GET['user']
+    user_id = request.GET.get('user', '0')
+    account = request.GET.get('account', '')
     exam_id = request.GET['exam']
 
     # exam
@@ -38,9 +39,9 @@ def index(request):
             for image in image_objs:
                 images.append(image.image)
             materials[question.id].update({"images": images})
-    #
 
-    context = {"exam": exam, "questions": questions, "materials": materials, "user": user_id, "exam_id": exam_id}
+    context = {"exam": exam, "questions": questions, "materials": materials, "user": user_id, "account": account,
+               "exam_id": exam_id}
     return render(request, 'exam/index.html', context)
 
 
@@ -165,3 +166,35 @@ def team_get_progress(request):
         each_progress = get_each_team_progress(exam_id, account)
         progress.append(each_progress)
     return http.wrap_ok_response(progress)
+
+
+@csrf_exempt
+def audience_get_progress(request):
+    exam_id = request.GET['exam']
+    progress = []
+
+
+@csrf_exempt
+def team_tick_answer(request):
+    exam_id = request.POST['exam']
+    question_id = request.POST['question']
+    this_answer = request.POST['answer']
+    account = request.POST['account']
+
+    answer_dic = {question_id: this_answer}
+    answer = json.dumps(answer_dic)
+
+    team_user = get_team_user(account)
+    team_score = Score.objects.filter(exam_id=exam_id, user_id=team_user.id)
+    if len(team_score) == 0:
+        Score.objects.create(exam_id=exam_id, user_id=team_user.id, answer=answer)
+    else:
+        team_score = team_score[0]
+        answer_new_dic = {}
+        if team_score.answer != '':
+            answer_new_dic.update(json.loads(team_score.answer))
+        answer_new_dic.update(answer_dic)
+        team_score.answer = json.dumps(answer_new_dic)
+        team_score.save()
+
+    return http.wrap_ok_response(json.loads(team_score.answer))

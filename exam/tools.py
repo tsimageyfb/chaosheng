@@ -43,6 +43,7 @@ def get_robot_user():
 def get_each_team_progress(exam_id, account):
     team_user = get_team_user(account)
     team_score = Score.objects.filter(exam_id=exam_id, user_id=team_user.id)
+    progress = 0
 
     if len(team_score) == 0:
         is_submit = False
@@ -52,9 +53,11 @@ def get_each_team_progress(exam_id, account):
         is_submit = team_score.submitted
         used_seconds = team_score.elapsed_seconds
         answer = team_score.answer
-        answer_map = json.loads(answer)
+        if answer != '':
+            answer_map = json.loads(answer)
+            progress = len(answer_map)
 
-    return {'id': team_user.id, 'name': NAME_TEAMS[account], 'pinyin': account, 'progress': 0,
+    return {'id': team_user.id, 'name': NAME_TEAMS[account], 'pinyin': account, 'progress': progress,
             'is_submit': is_submit, 'used_seconds': used_seconds}
 
 
@@ -65,3 +68,6 @@ def get_team_user(account):
     else:
         team_user = team_user[0]
     return team_user
+
+
+# def get_audience
