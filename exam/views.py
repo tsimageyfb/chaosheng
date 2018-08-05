@@ -156,7 +156,10 @@ def robot_get_progress(request):
         return http.wrap_ok_response({})
     else:
         robot_score = robot_score[0]
-        return http.wrap_ok_response(json.loads(robot_score.answer))
+        answer = "{}"
+        if robot_score.answer != '':
+            answer = robot_score.answer
+        return http.wrap_ok_response(json.loads(answer))
 
 
 @csrf_exempt
