@@ -252,3 +252,27 @@ def team_tick_answer(request):
         team_score.save()
 
     return http.wrap_ok_response(json.loads(team_score.answer))
+
+
+@csrf_exempt
+def team_submit_answer(request):
+    exam_id = request.POST['exam']
+    account = request.POST['account']
+
+    team_user = get_team_user(account)
+    team_score = Score.objects.filter(exam_id=exam_id, user_id=team_user.id)
+    if len(team_score) == 0:
+        return http.wrap_bad_response(-1, 'not found this exam')
+    else:
+        team_score = team_score[0]
+        team_score.submitted = True
+        # count score
+        if team_score.answer == '':
+            point = 0
+        else:
+            point = compute_score(exam_id, json.loads(team_score.answer))
+
+        team_score.score = point
+        team_score.save()
+
+    return HttpResponse(team_score.id)

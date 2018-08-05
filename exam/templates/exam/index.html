@@ -62,42 +62,55 @@
            var question = radio.data('index');
            var answer = radio.val();
            $.ajax({
-            url: "/exam/team-tick-answer",
-            method: "POST",
-            data: {exam: exam_id, account: account, question: question, answer: answer},
-            success: function (msg) {
-            },
-            error: function(jqXHR, textStatus) {
-                alert("Request failed: " + textStatus);
-            }
-        });
-        });
-    }
-
-
-    var answer = [];
-    $('#btn-commit').on('click', function () {
-        {% for question in questions %}
-            {% with index=forloop.counter %}
-                var radio_check = $("[name='radio-question-{{ index }}']").filter(":checked");
-                var each_answer = radio_check.val();
-                if (radio_check.length === 0) {
-                    each_answer = "0";
+                url: "/exam/team-tick-answer",
+                method: "POST",
+                data: {exam: exam_id, account: account, question: question, answer: answer},
+                success: function (msg) {
+                },
+                error: function(jqXHR, textStatus) {
+                    alert("Request failed: " + textStatus);
                 }
-                answer.push(each_answer);
-            {% endwith %}
-        {% endfor %}
-
-        $.ajax({
-            url: "/exam/ajax-post-answer",
-            method: "POST",
-            data: {answer: answer.join(","), user: user_id, exam: exam_id},
-            success: function (msg) {
-                window.location.href = "/exam/score?id="+msg;
-            },
-            error: function(jqXHR, textStatus) {
-                alert("Request failed: " + textStatus);
-            }
+            });
         });
-    })
+
+        $('#btn-commit').on('click', function () {
+            $.ajax({
+                url: "/exam/team-submit-answer",
+                method: "POST",
+                data: {exam: exam_id, account: account},
+                success: function (msg) {
+                    window.location.href = "/exam/score?id="+msg;
+                },
+                error: function(jqXHR, textStatus) {
+                    alert("Request failed: " + textStatus);
+                }
+            });
+        })
+    } else {
+        var answer = [];
+        $('#btn-commit').on('click', function () {
+            {% for question in questions %}
+                {% with index=forloop.counter %}
+                    var radio_check = $("[name='radio-question-{{ index }}']").filter(":checked");
+                    var each_answer = radio_check.val();
+                    if (radio_check.length === 0) {
+                        each_answer = "0";
+                    }
+                    answer.push(each_answer);
+                {% endwith %}
+            {% endfor %}
+
+            $.ajax({
+                url: "/exam/ajax-post-answer",
+                method: "POST",
+                data: {answer: answer.join(","), user: user_id, exam: exam_id},
+                success: function (msg) {
+                    window.location.href = "/exam/score?id="+msg;
+                },
+                error: function(jqXHR, textStatus) {
+                    alert("Request failed: " + textStatus);
+                }
+            });
+        })
+    }
 </script>

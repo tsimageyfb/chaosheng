@@ -18,6 +18,7 @@ urlpatterns = [
     url(r'^team-get-progress', views.team_get_progress, name='team-get-progress'),
     url(r'^team-get-rank', views.team_get_rank, name='team-get-rank'),
     url(r'^team-tick-answer', views.team_tick_answer, name='team-tick-answer'),
+    url(r'^team-submit-answer', views.team_submit_answer, name='team-submit-answer'),
 
     url(r'^audience-get-progress', views.audience_get_progress, name='audience-get-progress'),
     url(r'^audience-get-rank', views.audience_get_rank, name='audience-get-rank'),
