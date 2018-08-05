@@ -10,6 +10,7 @@ from .models import Exam, Question, MaterialImage, User, Score
 from .tools import compute_score, get_robot_user, get_each_team_progress, get_team_user, ACCOUNT_TEAMS, ACCOUNT_ROBOT
 from .tools import AUDIENCE_KEY, AUDIENCE_TYPE, get_audience_rank, get_audience_progress, NAME_TEAMS
 import django.utils.timezone as timezone
+import operator
 
 
 def entry(request):
@@ -214,7 +215,7 @@ def team_get_rank(request):
             rank.append({"name": NAME_TEAMS[account], "order": 0, "score": team_sore.score})
 
     # 排序
-    sorted(rank, key=lambda each: each['score'])
+    rank = sorted(rank, key=operator.itemgetter('score'), reverse=True)
     for i in range(len(rank)):
         rank[i]['order'] = i+1
     return http.wrap_ok_response(rank)
