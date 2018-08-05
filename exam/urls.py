@@ -6,11 +6,19 @@ urlpatterns = [
     url(r'^answer/$', views.index, name='answer'),
     url(r'^score/$', views.score, name='score'),
     url(r'^statistics/$', views.statistics, name='statistics'),
+
     url(r'^ajax-create-user', views.ajax_create_user, name='create-user'),
     url(r'^ajax-post-answer', views.ajax_post_answer, name='post-answer'),
+
     url(r'^robot-tick-answer', views.robot_tick_answer, name='robot-tick-answer'),
     url(r'^robot-submit-answer', views.robot_submit_answer, name='robot-submit-answer'),
     url(r'^robot-get-progress', views.robot_get_progress, name='robot-get-progress'),
+
     url(r'^team-get-progress', views.team_get_progress, name='team-get-progress'),
+    url(r'^team-get-rank', views.team_get_rank, name='team-get-rank'),
+
     url(r'^audience-get-progress', views.audience_get_progress, name='audience-get-progress'),
+    url(r'^audience-get-rank', views.audience_get_rank, name='audience-get-rank'),
+
+    url(r'^rest-seconds', views.rest_seconds, name='rest-seconds'),
 ]

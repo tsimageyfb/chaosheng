@@ -75,3 +75,10 @@ def get_team_user(account):
 
 def get_audience_progress(exam_id, audience_type):
     return {'name': AUDIENCE_NAME[audience_type], 'total': 100, 'submit': 80}
+
+
+def get_audience_rank(exam_id, count, audience_type):
+    result = []
+    for i in range(count):
+        result.append({'name': AUDIENCE_NAME[audience_type], 'order': i+1, 'phone': 1314, 'score': 50-i})
+    return result

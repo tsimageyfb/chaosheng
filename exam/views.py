@@ -7,8 +7,8 @@ from django.views.decorators.csrf import csrf_exempt
 from questionnaire import http
 import json
 from .models import Exam, Question, MaterialImage, User, Score
-from .tools import compute_score, get_robot_user, get_each_team_progress, get_team_user, ACCOUNT_TEAMS, get_audience_progress
-from .tools import AUDIENCE_KEY, AUDIENCE_TYPE
+from .tools import compute_score, get_robot_user, get_each_team_progress, get_team_user, ACCOUNT_TEAMS
+from .tools import AUDIENCE_KEY, AUDIENCE_TYPE, get_audience_rank, get_audience_progress, NAME_TEAMS
 
 
 def entry(request):
@@ -170,12 +170,40 @@ def team_get_progress(request):
 
 
 @csrf_exempt
+def team_get_rank(request):
+    exam_id = request.GET['exam']
+    rank = []
+    rank.append({"name": "机器人", "order": 1, "score": 50})
+    i = 0
+    for account in ACCOUNT_TEAMS:
+        rank.append({"name": NAME_TEAMS[account], "order": i+2, "score": 50-i-1})
+        i += 1
+    return http.wrap_ok_response(rank)
+
+
+@csrf_exempt
+def rest_seconds(request):
+    exam_id = request.GET['exam']
+    return http.wrap_ok_response({"rest": 600})
+
+
+@csrf_exempt
 def audience_get_progress(request):
     exam_id = request.GET['exam']
     progress = {}
     for aud_type in AUDIENCE_TYPE:
         progress[AUDIENCE_KEY[aud_type]] = get_audience_progress(exam_id, aud_type)
     return http.wrap_ok_response(progress)
+
+
+@csrf_exempt
+def audience_get_rank(request):
+    exam_id = request.GET['exam']
+    count = request.GET['count']
+    rank = {}
+    for aud_type in AUDIENCE_TYPE:
+        rank[AUDIENCE_KEY[aud_type]] = get_audience_rank(exam_id, int(count), aud_type)
+    return http.wrap_ok_response(rank)
 
 
 @csrf_exempt
