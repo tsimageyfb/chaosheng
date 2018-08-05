@@ -7,7 +7,7 @@ from django.views.decorators.csrf import csrf_exempt
 from questionnaire import http
 import json
 from .models import Exam, Question, MaterialImage, User, Score
-from .tools import compute_score, get_robot_user, get_each_team_progress, get_team_user, ACCOUNT_TEAMS
+from .tools import compute_score, get_robot_user, get_each_team_progress, get_team_user, ACCOUNT_TEAMS, ACCOUNT_ROBOT
 from .tools import AUDIENCE_KEY, AUDIENCE_TYPE, get_audience_rank, get_audience_progress, NAME_TEAMS
 
 
@@ -195,11 +195,24 @@ def team_get_progress(request):
 def team_get_rank(request):
     exam_id = request.GET['exam']
     rank = []
-    rank.append({"name": "机器人", "order": 1, "score": 50})
-    i = 0
+    # 先找机器人
+    robot_user = get_robot_user()
+    robot_score = Score.objects.filter(exam_id=exam_id, user_id=robot_user.id)
+    if len(robot_score) != 0:
+        robot_score = robot_score[0]
+        rank.append({"name": "机器人", "order": 0, "score": robot_score.score})
+    # 再找代表队
     for account in ACCOUNT_TEAMS:
-        rank.append({"name": NAME_TEAMS[account], "order": i+2, "score": 50-i-1})
-        i += 1
+        team_user = get_team_user(account)
+        team_sore = Score.objects.filter(exam_id=exam_id, user_id=team_user.id)
+        if len(team_sore) != 0:
+            team_sore = team_sore[0]
+            rank.append({"name": NAME_TEAMS[account], "order": 0, "score": team_sore.score})
+
+    # 排序
+    sorted(rank, key=lambda each: each['score'])
+    for i in range(len(rank)):
+        rank[i]['order'] = i+1
     return http.wrap_ok_response(rank)
 
 
