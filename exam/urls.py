@@ -12,4 +12,5 @@ urlpatterns = [
     url(r'^robot-submit-answer', views.robot_submit_answer, name='robot-submit-answer'),
     url(r'^robot-get-progress', views.robot_get_progress, name='robot-get-progress'),
     url(r'^team-get-progress', views.team_get_progress, name='team-get-progress'),
+    url(r'^audience-get-progress', views.audience_get_progress, name='audience-get-progress'),
 ]

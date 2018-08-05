@@ -6,10 +6,13 @@ ACCOUNT_ROBOT = 'robot'
 
 ACCOUNT_TEAMS = ['BEIJING1', 'BEIJING2', 'SHANGHAI', 'LIAONING', 'GUANGZHOU', 'SICHUAN', 'HUBEI', 'SHANXI1',
                  'SHENZHEN', 'NEIMENG', 'HEILONGJIANG', 'SHANXI2']
-
 NAME_TEAMS = {'BEIJING1': '北京1队', 'BEIJING2': '北京2队', 'SHANGHAI': '上海队', 'LIAONING': '辽宁队',
               'GUANGZHOU': '广州队', 'SICHUAN': '四川队', 'HUBEI': '湖北队', 'SHANXI1': '陕西队', 'SHENZHEN': '深圳队',
               'NEIMENG': '内蒙队', 'HEILONGJIANG': '黑龙江队', 'SHANXI2': '山西队'}
+
+AUDIENCE_TYPE = [1, 2]
+AUDIENCE_NAME = {1: "场内观众", 2: "场外观众"}
+AUDIENCE_KEY = {1: "inner", 2: "outer"}
 
 
 def compute_score(exam_id, answers_dic):
@@ -70,4 +73,5 @@ def get_team_user(account):
     return team_user
 
 
-# def get_audience
+def get_audience_progress(exam_id, audience_type):
+    return {'name': AUDIENCE_NAME[audience_type], 'total': 100, 'submit': 80}
