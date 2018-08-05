@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from .models import Exam, Question, User, Score
+import json
 
 ACCOUNT_ROBOT = 'robot'
 
@@ -50,6 +51,8 @@ def get_each_team_progress(exam_id, account):
         team_score = team_score[0]
         is_submit = team_score.submitted
         used_seconds = team_score.elapsed_seconds
+        answer = team_score.answer
+        answer_map = json.loads(answer)
 
     return {'id': team_user.id, 'name': NAME_TEAMS[account], 'pinyin': account, 'progress': 0,
             'is_submit': is_submit, 'used_seconds': used_seconds}

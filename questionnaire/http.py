@@ -4,15 +4,25 @@ from __future__ import unicode_literals
 import httplib
 import json
 from questionnaire import settings
-from django.http import HttpResponse
+from django.http import JsonResponse
 
 
 def wrap_ok_response(result):
-    return HttpResponse(json.dumps({'code': 0, 'message': '', 'data': result}), content_type='application/json')
+    response = JsonResponse({'code': 0, 'message': '', 'data': result}, safe=False)
+    response["Access-Control-Allow-Origin"] = "*"
+    response["Access-Control-Allow-Methods"] = "POST, GET, OPTIONS"
+    response["Access-Control-Max-Age"] = "1000"
+    response["Access-Control-Allow-Headers"] = "*"
+    return response
 
 
 def wrap_bad_response(code, msg):
-    return HttpResponse(json.dumps({'code': code, 'message': msg}), content_type='application/json')
+    response = JsonResponse({'code': code, 'message': msg}, safe=False)
+    response["Access-Control-Allow-Origin"] = "*"
+    response["Access-Control-Allow-Methods"] = "POST, GET, OPTIONS"
+    response["Access-Control-Max-Age"] = "1000"
+    response["Access-Control-Allow-Headers"] = "*"
+    return response
 
 
 def do_get(url):

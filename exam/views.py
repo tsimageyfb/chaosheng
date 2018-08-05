@@ -5,7 +5,7 @@ from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect
 from django.views.decorators.csrf import csrf_exempt
 from questionnaire import http
-import json, datetime, time
+import json
 from .models import Exam, Question, MaterialImage, User, Score
 from .tools import compute_score, get_robot_user, get_each_team_progress, ACCOUNT_TEAMS
 
