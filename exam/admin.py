@@ -6,7 +6,7 @@ from .models import Question, Exam, MaterialImage, User, Score
 
 
 class QuestionAdmin(admin.ModelAdmin):
-    list_display = ('id', 'material_type', 'material_ids')
+    list_display = ('id', 'material_type', 'material_ids', 'correct_answer')
 
 
 class ExamAdmin(admin.ModelAdmin):
@@ -14,7 +14,7 @@ class ExamAdmin(admin.ModelAdmin):
 
 
 class MaterialImageAdmin(admin.ModelAdmin):
-    list_display = ('id', 'image')
+    list_display = ('id', 'image_link', 'image')
 
 
 class UserAdmin(admin.ModelAdmin):

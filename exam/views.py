@@ -45,7 +45,10 @@ def index(request):
             image_objs = MaterialImage.objects.filter(id__in=image_ids)
             images = []
             for image in image_objs:
-                images.append(image.image)
+                if image.image_link != "":
+                    images.append(image.image_link)
+                else:
+                    images.append("/statics/"+str(image.image))
             materials[question.id].update({"images": images})
 
     context = {"exam": exam, "questions": questions, "materials": materials, "user": user_id, "account": account,

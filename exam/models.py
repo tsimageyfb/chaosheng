@@ -36,7 +36,8 @@ class Exam(models.Model):
 class MaterialImage(models.Model):
     name = models.CharField(max_length=24, default='', blank=True)
     description = models.CharField(max_length=64, default='', blank=True)
-    image = models.ImageField(upload_to='material_img')
+    image = models.ImageField(upload_to='material_img', blank=True)
+    image_link = models.CharField(max_length=256, default='', blank=True)
 
     created_at = models.DateTimeField(auto_now_add=True, editable=False)
     updated_at = models.DateTimeField(auto_now=True, editable=False)
