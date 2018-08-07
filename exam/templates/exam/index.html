@@ -87,7 +87,7 @@
                 method: "POST",
                 data: {exam: exam_id, account: account},
                 success: function (msg) {
-                    window.location.href = "/exam/score?id="+msg;
+                    window.location.href = "/exam/score?id="+msg+"&exam="+exam_id+"&account="+account;
                 },
                 error: function(jqXHR, textStatus) {
                     alert("Request failed: " + textStatus);
