@@ -6,7 +6,7 @@ from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from questionnaire import http
 import json
-from .models import Exam, Question, MaterialImage, User, Score
+from .models import Exam, Question, MaterialImage, User, Score, MaterialVideo
 from .tools import compute_score, get_robot_user, get_each_team_progress, get_team_user, ACCOUNT_TEAMS, ACCOUNT_ROBOT
 from .tools import AUDIENCE_KEY, AUDIENCE_TYPE, get_audience_rank, get_audience_progress, NAME_TEAMS
 import django.utils.timezone as timezone
@@ -40,16 +40,26 @@ def index(request):
         questions = Question.objects.filter(id__in=question_ids)
         for question in questions:
             materials[question.id] = {"options": question.answer_options.split(",")}
-            # images
-            image_ids = question.material_ids.split(",")
-            image_objs = MaterialImage.objects.filter(id__in=image_ids)
-            images = []
-            for image in image_objs:
-                if image.image_link != "":
-                    images.append(image.image_link)
-                else:
-                    images.append("/statics/"+str(image.image))
-            materials[question.id].update({"images": images})
+            if question.material_type == 1:
+                # images
+                image_ids = question.material_ids.split(",")
+                image_objs = MaterialImage.objects.filter(id__in=image_ids)
+                images = []
+                for image in image_objs:
+                    if image.image_link != "":
+                        images.append(image.image_link)
+                    else:
+                        images.append("/statics/"+str(image.image))
+                materials[question.id].update({"images": images})
+            elif question.material_type == 2:
+                # video
+                video_ids = question.material_ids.split(",")
+                video_objs = MaterialVideo.objects.filter(id__in=video_ids)
+                videos = []
+                for video in video_objs:
+                    if video.video_link != "":
+                        videos.append(video.video_link)
+                materials[question.id].update({"videos": videos})
 
     context = {"exam": exam, "questions": questions, "materials": materials, "user": user_id, "account": account,
                "exam_id": exam_id}

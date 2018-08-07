@@ -32,9 +32,17 @@
             {% endwith %}
         {% endfor %}
         <br>
-        {% for image in material.images %}
-            <img style="width: 200px;height: 150px;margin-right: 20px" src="{{ image }}">
-        {% endfor %}
+        {% if question.material_type == 1 %}
+            {% for image in material.images %}
+                <img style="width: 200px;height: 150px;margin-right: 20px" src="{{ image }}">
+            {% endfor %}
+        {% elif question.material_type == 2 %}
+            {% for video in material.videos %}
+                <video style="width: 400px;height: 400px" src="{{ video }}"  controls="controls">
+                    您的浏览器不支持播放，请使用chrome
+                </video>
+            {% endfor %}
+        {% endif %}
         {% endwith %}
         {% endwith %}
     {% endfor %}
