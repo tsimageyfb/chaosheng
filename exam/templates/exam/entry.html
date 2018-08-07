@@ -14,27 +14,34 @@
 </head>
 
 <style>
+    .text-align
+    {
+        margin-left: 32%;
+    }
 </style>
 
 <body>
 <div class="container text-center">
     <h1>填写信息</h1>
 </div>
+<div class="container text-right">
+    <p>--场内观众</p>
+</div>
 
 <div class="container">
 
 </div>
 
-<div class="container text-center">
+<div class="container text-left">
     <hr>
-    <label>您的姓名<font style="color: orangered;">*</font>: <input id="input-name"></label>
+    <label class="text-align">您的姓名<font style="color: orangered;">*</font>: <input id="input-name"></label>
     <br>
-    <label>您的手机号码<font style="color: orangered;">*</font>: <input id="input-phone"></label>
+    <label class="text-align">您的手机号码<font style="color: orangered;">*</font>: <input id="input-phone"></label>
     <hr>
 
-    <label>您的工作单位: <input id="input-workplace"></label>
+    <label class="text-align">您的工作单位: <input id="input-workplace"></label>
     <br>
-    <label>您的年资: </label>
+    <label class="text-align">您的年资: </label>
     <div class="dropdown" style="display: inline">
         <button id="btn-new-atom-key" class="btn btn-default btn-xs" type="button" data-toggle="dropdown" data-key="">请选择<span class="caret"></span></button>
         <ul class="dropdown-menu">
@@ -46,14 +53,18 @@
     </div>
     <hr>
 
-    <label>观众类别<font style="color: orangered;">*</font>: </label>
-    <label class="radio-inline">
-        <input id="input-side-in" type="radio" name="radio-side" value="1">场内观众
-    </label>
-    <label class="radio-inline">
-        <input id="input-side-out" type="radio" name="radio-side" value="2">场外观众
-    </label>
-    <br>
+{#    <label>观众类别<font style="color: orangered;">*</font>: </label>#}
+{#    <label class="radio-inline">#}
+{#        <input id="input-side-in" type="radio" name="radio-side" value="1">场内观众#}
+{#    </label>#}
+{#    <label class="radio-inline">#}
+{#        <input id="input-side-out" type="radio" name="radio-side" value="2">场外观众#}
+{#    </label>#}
+{#    <br>#}
+
+</div>
+
+<div class="container text-center">
     <textarea id="text-addr" style="width: 300px;height: 100px;" placeholder="请填写奖品寄送地址和联系人" hidden></textarea>
     <br>
     <button id="btn-begin-answer" class="btn btn-primary">提交并开始答题</button>
