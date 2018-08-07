@@ -10,7 +10,7 @@ class Question(models.Model):
     description = models.CharField(max_length=128, default='', blank=True)
     # 选择题的各选项，半角逗号隔开
     answer_options = models.CharField(max_length=64, default='良性,恶性')
-    # 1-材料纯图片
+    # 1-材料纯图片, 2-材料纯视频
     material_type = models.IntegerField(default='1')
     # 材料列表，半角逗号隔开
     material_ids = models.CharField(max_length=64)
@@ -62,6 +62,15 @@ class Score(models.Model):
     begin_at = models.DateTimeField(auto_now_add=True, editable=True)
     elapsed_seconds = models.IntegerField(default=0, blank=True)
     submitted = models.BooleanField(default=False)
+
+    created_at = models.DateTimeField(auto_now_add=True, editable=False)
+    updated_at = models.DateTimeField(auto_now=True, editable=False)
+
+
+class MaterialVideo(models.Model):
+    name = models.CharField(max_length=24, default='', blank=True)
+    description = models.CharField(max_length=64, default='', blank=True)
+    video_link = models.CharField(max_length=256, default='')
 
     created_at = models.DateTimeField(auto_now_add=True, editable=False)
     updated_at = models.DateTimeField(auto_now=True, editable=False)

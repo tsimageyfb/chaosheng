@@ -2,7 +2,7 @@
 from __future__ import unicode_literals
 
 from django.contrib import admin
-from .models import Question, Exam, MaterialImage, User, Score
+from .models import Question, Exam, MaterialImage, User, Score, MaterialVideo
 
 
 class QuestionAdmin(admin.ModelAdmin):
@@ -25,8 +25,13 @@ class ScoreAdmin(admin.ModelAdmin):
     list_display = ('id', 'exam_id', 'user_id', 'score', 'submitted', 'begin_at')
 
 
+class MaterialVideoAdmin(admin.ModelAdmin):
+    list_display = ('id', 'video_link')
+
+
 admin.site.register(Question, QuestionAdmin)
 admin.site.register(Exam, ExamAdmin)
 admin.site.register(MaterialImage, MaterialImageAdmin)
 admin.site.register(User, UserAdmin)
 admin.site.register(Score, ScoreAdmin)
+admin.site.register(MaterialVideo, MaterialVideoAdmin)
