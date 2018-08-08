@@ -350,6 +350,7 @@ def wrong_rank(request):
         if question.material_type == 2:
             materials = map(lambda each: each["video_link"], MaterialVideo.objects.filter(id__in=material_ids).values("video_link"))
         result.append({"order": i+1, "wrong_count": stat.wrong_count, "material_type": question.material_type,
-                       "question_number": map_question_number[str(stat.question_id)], "materials": materials})
+                       "question_number": map_question_number[str(stat.question_id)], "materials": materials,
+                       "correct_answer": question.correct_answer})
         i += 1
     return http.wrap_ok_response(result)
