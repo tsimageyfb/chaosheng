@@ -43,12 +43,12 @@
     <br>
     <label class="text-align">您的年资: </label>
     <div class="dropdown" style="display: inline">
-        <button id="btn-new-atom-key" class="btn btn-default btn-xs" type="button" data-toggle="dropdown" data-key="">请选择<span class="caret"></span></button>
+        <button id="btn-year" class="btn btn-default btn-xs" type="button" data-toggle="dropdown" data-key="">请选择<span class="caret"></span></button>
         <ul class="dropdown-menu">
-            <li class="li-new-atom-key" data-key="{{ key.obj }}"><a>初级医师</a></li>
-            <li class="li-new-atom-key" data-key="{{ key.obj }}"><a>中级医师</a></li>
-            <li class="li-new-atom-key" data-key="{{ key.obj }}"><a>高级医师</a></li>
-            <li class="li-new-atom-key" data-key="{{ key.obj }}"><a>其他</a></li>
+            <li class="li-year" data-key="1"><a>初级医师</a></li>
+            <li class="li-year" data-key="2"><a>中级医师</a></li>
+            <li class="li-year" data-key="3"><a>高级医师</a></li>
+            <li class="li-year" data-key="4"><a>其他</a></li>
         </ul>
     </div>
     <hr>
@@ -76,6 +76,12 @@
 
 <script>
     $("#input-phone").focus();
+
+    $('.li-year').on('click', function () {
+        var year = $(this).text();
+        $('#btn-year').text(year);
+        $('#btn-year').data('key', $(this).data('key'))
+    });
 
     $("[name='radio-side']").click(function () {
         var side_click = $(this).val();
