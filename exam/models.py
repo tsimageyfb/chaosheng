@@ -74,3 +74,13 @@ class MaterialVideo(models.Model):
 
     created_at = models.DateTimeField(auto_now_add=True, editable=False)
     updated_at = models.DateTimeField(auto_now=True, editable=False)
+
+
+class QuestionStatistics(models.Model):
+    question_id = models.IntegerField()
+    wrong_count = models.IntegerField(default=0)
+    user_type = models.IntegerField(default=0)  # 0-各代表队和robot，1-场内观众，2-场外观众
+
+    created_at = models.DateTimeField(auto_now_add=True, editable=False)
+    updated_at = models.DateTimeField(auto_now=True, editable=False)
+
