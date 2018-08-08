@@ -6,7 +6,7 @@ from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from questionnaire import http
 import json
-from .models import Exam, Question, MaterialImage, User, Score, MaterialVideo
+from .models import Exam, Question, MaterialImage, User, Score, MaterialVideo, QuestionStatistics
 from .tools import compute_score, get_robot_user, get_each_team_progress, get_team_user, ACCOUNT_TEAMS, ACCOUNT_ROBOT
 from .tools import AUDIENCE_KEY, AUDIENCE_TYPE, get_audience_rank, get_audience_progress, NAME_TEAMS
 import django.utils.timezone as timezone
@@ -312,3 +312,44 @@ def team_submit_answer(request):
         team_score.save()
 
     return HttpResponse(team_score.id)
+
+
+@csrf_exempt
+def wrong_rank(request):
+    exam_id = request.GET['exam']
+    count = request.GET.get('count', 5)
+
+    # find questions
+    question_ids = Exam.objects.get(id=exam_id).questions.split(",")
+    if question_ids is None or len(question_ids) == 0:
+        return http.wrap_ok_response(None)
+
+    # find statistics
+    data = QuestionStatistics.objects.filter(question_id__in=question_ids).order_by("-wrong_count")
+    if data is None or len(data) == 0:
+        return http.wrap_ok_response(None)
+
+    # wrap
+    map_question_number = {}
+    i = 1
+    for qid in question_ids:
+        map_question_number[qid] = i
+        i += 1
+
+    result = []
+    i = 0
+    for stat in data:
+        if i >= count:
+            return http.wrap_ok_response(result)
+        # get materials
+        materials = []
+        question = Question.objects.get(id=stat.question_id)
+        material_ids = question.material_ids.split(",")
+        if question.material_type == 1:
+            materials = map(lambda each: each["image_link"], MaterialImage.objects.filter(id__in=material_ids).values("image_link"))
+        if question.material_type == 2:
+            materials = map(lambda each: each["video_link"], MaterialVideo.objects.filter(id__in=material_ids).values("video_link"))
+        result.append({"order": i+1, "wrong_count": stat.wrong_count, "material_type": question.material_type,
+                       "question_number": map_question_number[str(stat.question_id)], "materials": materials})
+        i += 1
+    return http.wrap_ok_response(result)

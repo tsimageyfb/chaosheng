@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from .models import Exam, Question, User, Score
+from .models import Exam, Question, User, Score, QuestionStatistics
 import json
 
 ACCOUNT_ROBOT = 'robot'
@@ -31,6 +31,16 @@ def compute_score(exam_id, answers_dic):
         if key in answers_right:
             if answers_right[key] == val:
                 score += 1
+            else:
+                # count wrong statistics
+                qid = question_ids[int(key)-1]
+                data = QuestionStatistics.objects.filter(question_id=qid)
+                if data is None or len(data) == 0:
+                    QuestionStatistics.objects.create(question_id=qid, wrong_count=1, user_type=0)
+                else:
+                    data = data[0]
+                    data.wrong_count += 1
+                    data.save()
     return score
 
 
