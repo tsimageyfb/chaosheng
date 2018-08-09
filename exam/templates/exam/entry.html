@@ -25,7 +25,11 @@
     <h1>填写信息</h1>
 </div>
 <div class="container text-right">
-    <p>--场内观众</p>
+    {% if user_type == "outer" %}
+        <p>--场外观众</p>
+    {% else %}
+        <p>--场内观众</p>
+    {% endif %}
 </div>
 
 <div class="container">
@@ -65,7 +69,11 @@
 </div>
 
 <div class="container text-center">
-    <textarea id="text-addr" style="width: 300px;height: 100px;" placeholder="请填写奖品寄送地址和联系人" hidden></textarea>
+    {% if user_type == "outer" %}
+        <textarea id="text-addr" style="width: 300px;height: 100px;" placeholder="请填写奖品寄送地址和联系人"></textarea>
+    {% else %}
+        <textarea id="text-addr" style="width: 300px;height: 100px;" placeholder="请填写奖品寄送地址和联系人" hidden></textarea>
+    {% endif %}
     <br>
     <button id="btn-begin-answer" class="btn btn-primary">提交并开始答题</button>
 </div>

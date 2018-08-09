@@ -14,7 +14,8 @@ import operator
 
 
 def entry(request):
-    context = {"exam_id": 1}
+    user_type = request.GET.get("user_type", "inner")
+    context = {"exam_id": 1, "user_type": user_type}
     return render(request, 'exam/entry.html', context)
 
 
