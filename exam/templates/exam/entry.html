@@ -110,10 +110,6 @@
             return;
         }
         var radio_side = $("[name='radio-side']").filter(":checked");
-        if (radio_side.length === 0) {
-            alert('请选择观众类型');
-            return;
-        }
         var side = radio_side.val();
         var addr = $('#text-addr').val();
         $.ajax({
