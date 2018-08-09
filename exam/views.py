@@ -69,7 +69,7 @@ def index(request):
 
 def score(request):
     score_id = request.GET['id']
-    exam_id = request.GET['exam']
+    exam_id = request.GET.get('exam', 1)
     account = request.GET.get('account', '')
     ob = Score.objects.get(id=score_id)
     count = 0
