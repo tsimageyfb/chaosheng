@@ -118,7 +118,7 @@
                 method: "POST",
                 data: {answer: answer.join(","), user: user_id, exam: exam_id},
                 success: function (msg) {
-                    window.location.href = "/exam/score?id="+msg;
+                    window.location.href = "/exam/score?id="+msg+"&exam="+exam_id+"&user="+user_id;
                 },
                 error: function(jqXHR, textStatus) {
                     alert("Request failed: " + textStatus);

@@ -71,13 +71,15 @@ def score(request):
     score_id = request.GET['id']
     exam_id = request.GET.get('exam', 1)
     account = request.GET.get('account', '')
+    user_id = request.GET.get('user', 0)
+
     ob = Score.objects.get(id=score_id)
     count = 0
     right = 0
     if ob is not None:
         count = len(ob.answer.split(","))
         right = ob.score
-    context = {"count": count, "right": right, "exam_id": int(exam_id), "account": account}
+    context = {"count": count, "right": right, "exam_id": int(exam_id), "account": account, "user": user_id}
     return render(request, 'exam/score.html', context)
 
 
