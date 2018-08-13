@@ -345,9 +345,9 @@ def wrong_rank(request):
         if i >= count:
             return http.wrap_ok_response(result)
         # get materials
-        explain_pics = []
         materials = []
         question = Question.objects.get(id=stat.question_id)
+        explain_pics = [question.explain_image_link]
         material_ids = question.material_ids.split(",")
         if question.material_type == 1:
             materials = map(lambda each: each["image_link"], MaterialImage.objects.filter(id__in=material_ids).values("image_link"))
