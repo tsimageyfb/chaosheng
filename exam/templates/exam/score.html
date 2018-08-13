@@ -32,6 +32,12 @@
 </html>
 
 <script>
+    //防止页面后退
+    history.pushState(null, null, document.URL);
+    window.addEventListener('popstate', function () {
+        history.pushState(null, null, document.URL);
+    });
+
     var count = {{ count }};
     var right = {{ right }};
     var chart = Highcharts.chart('chart-score', {
