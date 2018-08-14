@@ -8,7 +8,7 @@ from questionnaire import http
 import json
 from .models import Exam, Question, MaterialImage, User, Score, MaterialVideo, QuestionStatistics
 from .tools import compute_score, get_robot_user, get_each_team_progress, get_team_user, ACCOUNT_TEAMS, ACCOUNT_ROBOT
-from .tools import AUDIENCE_KEY, AUDIENCE_TYPE, get_audience_rank, get_audience_progress, NAME_TEAMS
+from .tools import AUDIENCE_KEY, AUDIENCE_TYPE, get_audience_rank, get_audience_progress, NAME_TEAMS, get_pre_exam_score
 import django.utils.timezone as timezone
 import operator
 
@@ -129,7 +129,7 @@ def ajax_post_answer(request):
         question = Question.objects.get(id=qid)
         correct_answers.append(question.correct_answer)
 
-    answer_score = 0
+    answer_score = get_pre_exam_score(exam_id, None, user)
     for k in range(len(answers)):
         if answers[k] == correct_answers[k]:
             answer_score += 1
@@ -187,10 +187,11 @@ def robot_submit_answer(request):
         robot_score = robot_score[0]
         robot_score.submitted = True
         # count score
+        point = get_pre_exam_score(exam_id, ACCOUNT_ROBOT, 0)
         if robot_score.answer == '':
-            point = 0
+            point += 0
         else:
-            point = compute_score(exam_id, json.loads(robot_score.answer))
+            point += compute_score(exam_id, json.loads(robot_score.answer))
 
         robot_score.elapsed_seconds = int((timezone.now()-robot_score.begin_at).total_seconds())
         robot_score.score = point
@@ -315,10 +316,11 @@ def team_submit_answer(request):
         team_score = team_score[0]
         team_score.submitted = True
         # count score
+        point = get_pre_exam_score(exam_id, account, 0)
         if team_score.answer == '':
-            point = 0
+            point += 0
         else:
-            point = compute_score(exam_id, json.loads(team_score.answer))
+            point += compute_score(exam_id, json.loads(team_score.answer))
 
         team_score.elapsed_seconds = int((timezone.now()-team_score.begin_at).total_seconds())
         team_score.score = point

@@ -15,6 +15,35 @@ AUDIENCE_NAME = {1: "场内观众", 2: "场外观众"}
 AUDIENCE_KEY = {1: "inner", 2: "outer"}
 
 
+def get_pre_exam_score(exam_id, account, user_id):
+    if exam_id != 2 or exam_id != 3:
+        # 非半决赛、决赛，都没有累加分
+        return 0
+
+    pre_exam_id = 0
+    # 半决赛
+    if exam_id == 2:
+        pre_exam_id = 1
+    # 决赛
+    if exam_id == 3:
+        pre_exam_id = 2
+
+    if account is not None and account != "":
+        if account == ACCOUNT_ROBOT:
+            user = get_robot_user()
+        else:
+            user = get_team_user(account)
+    else:
+        user = User.objects.get(id=user_id)
+
+    # get pre exam score
+    pre_exam_score = Score.objects.filter(exam_id=pre_exam_id, user_id=user.id)
+    if len(pre_exam_score) > 0:
+        pre_exam_score = pre_exam_score[0]
+        return pre_exam_score.score
+    return 0
+
+
 def compute_score(exam_id, answers_dic):
     exam = Exam.objects.get(id=exam_id)
     question_ids = exam.questions.split(",")
