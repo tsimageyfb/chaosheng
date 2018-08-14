@@ -16,11 +16,18 @@ import operator
 
 def entry(request):
     user_id = request.session.get('user_id', '0')
+    exam_id = request.session.get('exam_id', '4')
+    # stage: 1-exam, 2-score
+    stage = request.session.get('stage', '1')
+
     if user_id != '0':
-        return HttpResponseRedirect("answer?exam="+str(1)+"&user="+str(user_id))
+        if stage == '1':
+            return HttpResponseRedirect("answer?exam="+str(exam_id)+"&user="+str(user_id))
+        else:
+            return HttpResponseRedirect("score?exam="+str(exam_id)+"&user="+str(user_id))
 
     user_type = request.GET.get("user_type", "inner")
-    context = {"exam_id": 1, "user_type": user_type}
+    context = {"exam_id": 4, "user_type": user_type}
     return render(request, 'exam/entry.html', context)
 
 
@@ -34,6 +41,9 @@ def index(request):
     user_id = request.GET.get('user', '0')
     account = request.GET.get('account', '')
     exam_id = request.GET['exam']
+    if int(exam_id) > 0:
+        request.session['exam_id'] = str(exam_id)
+        request.session['stage'] = "1"
 
     # exam
     exam = Exam.objects.get(id=exam_id)
@@ -76,6 +86,7 @@ def score(request):
     exam_id = request.GET.get('exam', 1)
     account = request.GET.get('account', '')
     user_id = request.GET.get('user', 0)
+    request.session['stage'] = "2"
     if account != '':
         user = get_team_user(account)
         user_id = user.id
