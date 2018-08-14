@@ -9,6 +9,7 @@ import json
 from .models import Exam, Question, MaterialImage, User, Score, MaterialVideo, QuestionStatistics
 from .tools import compute_score, get_robot_user, get_each_team_progress, get_team_user, ACCOUNT_TEAMS, ACCOUNT_ROBOT
 from .tools import AUDIENCE_KEY, AUDIENCE_TYPE, get_audience_rank, get_audience_progress, NAME_TEAMS, get_pre_exam_score
+from .tools import get_pre_exam_winner
 import django.utils.timezone as timezone
 import operator
 
@@ -219,7 +220,7 @@ def robot_get_progress(request):
 def team_get_progress(request):
     exam_id = request.GET['exam']
     progress = []
-    for account in ACCOUNT_TEAMS:
+    for account in get_pre_exam_winner(exam_id):
         each_progress = get_each_team_progress(exam_id, account)
         progress.append(each_progress)
     return http.wrap_ok_response(progress)

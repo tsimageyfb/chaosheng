@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from .models import Exam, Question, User, Score, QuestionStatistics
 import json
+import operator
 
 ACCOUNT_ROBOT = 'robot'
 
@@ -13,6 +14,41 @@ NAME_TEAMS = {'BEIJING1': '北京1队', 'BEIJING2': '北京2队', 'SHANGHAI': '�
 AUDIENCE_TYPE = [1, 2]
 AUDIENCE_NAME = {1: "场内观众", 2: "场外观众"}
 AUDIENCE_KEY = {1: "inner", 2: "outer"}
+
+
+def get_pre_exam_winner(exam_id):
+    if exam_id != 2 or exam_id != 3:
+        # 非半决赛、决赛，都没有累加分
+        return ACCOUNT_TEAMS
+
+    pre_exam_id = 0
+    count = 0
+    # 半决赛
+    if exam_id == 2:
+        pre_exam_id = 1
+        count = 6
+    # 决赛
+    if exam_id == 3:
+        pre_exam_id = 2
+        count = 2
+
+    teams = []
+    winner_teams = []
+    for account in ACCOUNT_TEAMS:
+        team_user = get_team_user(account)
+        team_sore = Score.objects.filter(exam_id=pre_exam_id, user_id=team_user.id)
+        if len(team_sore) > 0:
+            team_sore = team_sore[0]
+            teams.append({"name": NAME_TEAMS[account], "account": account, "score": team_sore.score})
+    if len(teams) == 0:
+        return ACCOUNT_TEAMS
+
+    teams = sorted(teams, key=operator.itemgetter('score'), reverse=True)
+    for i in range(0, count):
+        if len(teams) > i:
+            winner_teams.append(teams['account'])
+
+    return winner_teams
 
 
 def get_pre_exam_score(exam_id, account, user_id):
