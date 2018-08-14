@@ -17,18 +17,18 @@ AUDIENCE_KEY = {1: "inner", 2: "outer"}
 
 
 def get_pre_exam_winner(exam_id):
-    if exam_id != 2 or exam_id != 3:
+    if int(exam_id) != 2 and int(exam_id) != 3:
         # 非半决赛、决赛，都没有累加分
         return ACCOUNT_TEAMS
 
     pre_exam_id = 0
     count = 0
     # 半决赛
-    if exam_id == 2:
+    if int(exam_id) == 2:
         pre_exam_id = 1
         count = 6
     # 决赛
-    if exam_id == 3:
+    if int(exam_id) == 3:
         pre_exam_id = 2
         count = 2
 
@@ -46,22 +46,22 @@ def get_pre_exam_winner(exam_id):
     teams = sorted(teams, key=operator.itemgetter('score'), reverse=True)
     for i in range(0, count):
         if len(teams) > i:
-            winner_teams.append(teams['account'])
+            winner_teams.append(teams[i]['account'])
 
     return winner_teams
 
 
 def get_pre_exam_score(exam_id, account, user_id):
-    if exam_id != 2 or exam_id != 3:
+    if int(exam_id) != 2 and int(exam_id) != 3:
         # 非半决赛、决赛，都没有累加分
         return 0
 
     pre_exam_id = 0
     # 半决赛
-    if exam_id == 2:
+    if int(exam_id) == 2:
         pre_exam_id = 1
     # 决赛
-    if exam_id == 3:
+    if int(exam_id) == 3:
         pre_exam_id = 2
 
     if account is not None and account != "":
