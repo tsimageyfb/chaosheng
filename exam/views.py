@@ -358,3 +358,29 @@ def wrong_rank(request):
                        "correct_answer": int(question.correct_answer), "explain_pics": explain_pics})
         i += 1
     return http.wrap_ok_response(result)
+
+
+@csrf_exempt
+def show_exam(request):
+    exam_id = request.GET['exam']
+    exam = Exam.objects.get(id=exam_id)
+    question_ids = exam.questions.split(',')
+    count = 1
+    questions = []
+    for question_id in question_ids:
+        question = {}
+        question_obj = Question.objects.get(id=question_id)
+        question['question_number'] = count
+        question['material_type'] = question_obj.material_type
+        material_ids = question_obj.material_ids.split(',')
+        material_links = []
+        for material_id in material_ids:
+            if question_obj.material_type == 1:
+                material_links.append(MaterialImage.objects.get(id=material_id).image_link)
+            elif question_obj.material_type == 2:
+                material_links.append(MaterialVideo.objects.get(id=material_id).video_link)
+        question['material_links'] = material_links
+        questions.append(question)
+
+    exam_data = {'exam_id': int(exam_id), 'exam_title': exam.title, 'questions': questions}
+    return http.wrap_ok_response(exam_data)
