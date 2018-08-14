@@ -381,6 +381,7 @@ def show_exam(request):
                 material_links.append(MaterialVideo.objects.get(id=material_id).video_link)
         question['material_links'] = material_links
         questions.append(question)
+        count += 1
 
     exam_data = {'exam_id': int(exam_id), 'exam_title': exam.title, 'questions': questions}
     return http.wrap_ok_response(exam_data)
