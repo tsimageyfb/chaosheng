@@ -2,7 +2,7 @@
 from __future__ import unicode_literals
 
 from django.shortcuts import render
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from django.views.decorators.csrf import csrf_exempt
 from questionnaire import http
 import json
@@ -15,6 +15,10 @@ import operator
 
 
 def entry(request):
+    user_id = request.session.get('user_id', '0')
+    if user_id != '0':
+        return HttpResponseRedirect("answer?exam="+str(1)+"&user="+str(user_id))
+
     user_type = request.GET.get("user_type", "inner")
     context = {"exam_id": 1, "user_type": user_type}
     return render(request, 'exam/entry.html', context)
@@ -69,12 +73,14 @@ def index(request):
 
 
 def score(request):
-    score_id = request.GET['id']
     exam_id = request.GET.get('exam', 1)
     account = request.GET.get('account', '')
     user_id = request.GET.get('user', 0)
+    if account != '':
+        user = get_team_user(account)
+        user_id = user.id
 
-    ob = Score.objects.get(id=score_id)
+    ob = Score.objects.get(exam_id=exam_id, user_id=user_id)
     count = 0
     right = 0
     if ob is not None:
@@ -114,6 +120,7 @@ def ajax_create_user(request):
             user = User.objects.create(phone=phone, user_type=user_type, address=address)
         else:
             user = user[0]
+        request.session['user_id'] = user.id
     return HttpResponse(user.id)
 
 

@@ -113,7 +113,7 @@
                 method: "POST",
                 data: {exam: exam_id, account: account},
                 success: function (msg) {
-                    window.location.href = "/exam/score?id="+msg+"&exam="+exam_id+"&account="+account;
+                    window.location.href = "/exam/score?exam="+exam_id+"&account="+account;
                 },
                 error: function(jqXHR, textStatus) {
                     alert("Request failed: " + textStatus);
@@ -139,7 +139,7 @@
                 method: "POST",
                 data: {answer: answer.join(","), user: user_id, exam: exam_id},
                 success: function (msg) {
-                    window.location.href = "/exam/score?id="+msg+"&exam="+exam_id+"&user="+user_id;
+                    window.location.href = "/exam/score?exam="+exam_id+"&user="+user_id;
                 },
                 error: function(jqXHR, textStatus) {
                     alert("Request failed: " + textStatus);
