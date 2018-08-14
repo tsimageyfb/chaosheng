@@ -84,7 +84,14 @@ def get_team_user(account):
 
 
 def get_audience_progress(exam_id, audience_type):
-    return {'name': AUDIENCE_NAME[audience_type], 'total': 100, 'submit': 80}
+    users = User.objects.filter(user_type=audience_type)
+    user_ids = []
+    if len(users) > 0:
+        for user in users:
+            user_ids.append(user.id)
+    submit = len(Score.objects.filter(exam_id=exam_id, user_id__in=user_ids))
+
+    return {'name': AUDIENCE_NAME[audience_type], 'total': len(users), 'submit': submit}
 
 
 def get_audience_rank(exam_id, count, audience_type):

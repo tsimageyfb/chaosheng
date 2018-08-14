@@ -134,8 +134,18 @@ def ajax_post_answer(request):
         if answers[k] == correct_answers[k]:
             answer_score += 1
 
-    ob = Score.objects.create(exam_id=exam_id, user_id=user, answer=answer_raw, score=answer_score)
-    return HttpResponse(ob.id)
+    # find if existed
+    user_score = Score.objects.filter(exam_id=exam_id, user_id=user)
+    if len(user_score) > 0:
+        user_score = user_score[0]
+        user_score.answer = answer_raw
+        user_score.score = answer_score
+        user_score.submitted = True
+        user_score.save()
+    else:
+        user_score = Score.objects.create(exam_id=exam_id, user_id=user, answer=answer_raw,
+                                          score=answer_score, submitted=True)
+    return HttpResponse(user_score.id)
 
 
 @csrf_exempt
