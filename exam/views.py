@@ -179,7 +179,7 @@ def robot_tick_answer(request):
     robot_user = get_robot_user()
     robot_score = Score.objects.filter(exam_id=exam_id, user_id=robot_user.id)
     if len(robot_score) == 0:
-        Score.objects.create(exam_id=exam_id, user_id=robot_user.id, answer=answer)
+        robot_score = Score.objects.create(exam_id=exam_id, user_id=robot_user.id, answer=answer)
     else:
         robot_score = robot_score[0]
         answer_new_dic = {}
