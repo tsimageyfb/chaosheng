@@ -27,4 +27,7 @@ urlpatterns = [
 
     url(r'^wrong-rank', views.wrong_rank, name='wrong-rank'),
     url(r'^show', views.show_exam, name='show-exam'),
+
+    url(r'^get-stage', views.req_get_stage, name='get-stage'),
+    url(r'^set-stage', views.req_set_stage, name='set-stage'),
 ]

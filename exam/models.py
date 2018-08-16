@@ -86,3 +86,11 @@ class QuestionStatistics(models.Model):
     created_at = models.DateTimeField(auto_now_add=True, editable=False)
     updated_at = models.DateTimeField(auto_now=True, editable=False)
 
+
+class Stage(models.Model):
+    # 阶段：0-模拟赛前，1-模拟赛开始，2-模拟赛结束，3-初赛开始，4-初赛结束，5-半决赛开始，6-半决赛结束，7-决赛开始，8-决赛结束
+    stage = models.IntegerField()
+    begin_timestamp = models.IntegerField()
+
+    created_at = models.DateTimeField(auto_now_add=True, editable=False)
+    updated_at = models.DateTimeField(auto_now=True, editable=False)

@@ -12,6 +12,7 @@ from .tools import AUDIENCE_KEY, AUDIENCE_TYPE, get_audience_rank, get_audience_
 from .tools import get_pre_exam_winner
 import django.utils.timezone as timezone
 import operator
+from .stage import get_stage, get_stage_begin_timestamp, set_stage
 
 
 def entry(request):
@@ -416,3 +417,15 @@ def show_exam(request):
 
     exam_data = {'exam_id': int(exam_id), 'exam_title': exam.title, 'questions': questions}
     return http.wrap_ok_response(exam_data)
+
+
+@csrf_exempt
+def req_get_stage(request):
+    return http.wrap_ok_response({"stage": get_stage()})
+
+
+@csrf_exempt
+def req_set_stage(request):
+    stage_obj = request.GET['stage']
+    set_stage(stage_obj)
+    return http.wrap_ok_response(None)
