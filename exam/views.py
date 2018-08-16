@@ -12,7 +12,7 @@ from .tools import AUDIENCE_KEY, AUDIENCE_TYPE, get_audience_rank, get_audience_
 from .tools import get_pre_exam_winner
 import django.utils.timezone as timezone
 import operator
-from .stage import get_stage, get_stage_begin_timestamp, set_stage
+from .stage import get_stage, get_stage_begin_timestamp, set_stage, get_stage_name
 
 
 def entry(request):
@@ -440,3 +440,24 @@ def req_set_stage(request):
     stage_obj = request.GET['stage']
     set_stage(stage_obj)
     return http.wrap_ok_response(None)
+
+
+def stage(request):
+    context = {"stage": get_stage_name(get_stage())}
+    return render(request, 'exam/stage.html', context)
+
+
+@csrf_exempt
+def add_stage(request):
+    stage_now = get_stage()
+    if int(stage_now) < 8:
+        set_stage(int(stage_now) + 1)
+    return HttpResponse("ok")
+
+
+@csrf_exempt
+def sub_stage(request):
+    stage_now = get_stage()
+    if int(stage_now) > 0:
+        set_stage(int(stage_now) - 1)
+    return HttpResponse("ok")
