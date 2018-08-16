@@ -78,8 +78,19 @@ def index(request):
                         videos.append(video.video_link)
                 materials[question.id].update({"videos": videos})
 
+    # stage
+    obj_stage = 0
+    if int(exam_id) == 4:
+        obj_stage = 1
+    if int(exam_id) == 1:
+        obj_stage = 3
+    if int(exam_id) == 2:
+        obj_stage = 5
+    if int(exam_id) == 3:
+        obj_stage = 7
+
     context = {"exam": exam, "questions": questions, "materials": materials, "user": user_id, "account": account,
-               "exam_id": exam_id}
+               "exam_id": exam_id, "stage": get_stage(), "obj_stage": obj_stage}
     return render(request, 'exam/index.html', context)
 
 
