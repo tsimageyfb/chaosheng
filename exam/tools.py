@@ -163,6 +163,10 @@ def get_audience_rank(exam_id, count, audience_type):
     result = []
     # get users
     users = User.objects.filter(user_type=audience_type)
+    map_user = {}
+    for u in users:
+        map_user[u.id] = u
+
     if len(users) == 0:
         return result
     user_ids = map(lambda each: each.id, users)
@@ -170,8 +174,9 @@ def get_audience_rank(exam_id, count, audience_type):
     if len(scores) == 0:
         return result
 
-    scores = sorted(scores, key=lambda each: each["score"], reverse=True)
-
+    scores = sorted(scores, key=lambda each: each.score, reverse=True)
     for i in range(count):
-        result.append({'name': AUDIENCE_NAME[audience_type], 'order': i+1, 'phone': 1314, 'score': scores[i]})
+        if len(scores) > i:
+            score = scores[i]
+            result.append({'name': map_user[score.user_id].name, 'order': i+1, 'phone': map_user[score.user_id].phone[-4:], 'score': score.score})
     return result
