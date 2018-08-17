@@ -217,8 +217,10 @@
         $('#textarea-content').text(unanswer);
         if (unanswer.length === 0) {
             $('#label-title').text("全部答完");
+            $('#btn-commit').show();
         } else {
-            $('#label-title').text("未答题目：");
+            $('#label-title').text("需要全部答完才能提交，未答题目：");
+            $('#btn-commit').hide();
         }
     })
 </script>
