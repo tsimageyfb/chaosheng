@@ -467,6 +467,35 @@ def add_stage(request):
     stage_now = get_stage()
     if int(stage_now) < 8:
         set_stage(int(stage_now) + 1)
+
+    # 可能要帮助代表队提交
+    stage_to = int(stage_now) + 1
+    exam_id = 0
+    if stage_to in [2, 4, 6, 8]:
+        if stage_to == 2:
+            exam_id = 4
+        if stage_to == 4:
+            exam_id = 1
+        if stage_to == 6:
+            exam_id = 2
+        if stage_to == 8:
+            exam_id = 3
+    scores = Score.objects.filter(exam_id=exam_id, submitted=False)
+    if len(scores) > 0:
+        for each in scores:
+            each.submitted = True
+            user = User.objects.get(id=each.user_id)
+            # count score
+            point = get_pre_exam_score(exam_id, user.account, 0)
+            if each.answer == '':
+                point += 0
+            else:
+                point += compute_score(exam_id, json.loads(each.answer))
+
+            each.elapsed_seconds = int((timezone.now() - each.begin_at).total_seconds())
+            each.score = point
+            each.save()
+
     return HttpResponse("ok")
 
 
