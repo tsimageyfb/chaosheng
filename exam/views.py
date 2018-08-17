@@ -13,6 +13,7 @@ from .tools import get_pre_exam_winner
 import django.utils.timezone as timezone
 import operator
 from .stage import get_stage, get_stage_begin_timestamp, set_stage, get_stage_name
+import time
 
 
 def entry(request):
@@ -284,7 +285,15 @@ def team_get_rank(request):
 @csrf_exempt
 def rest_seconds(request):
     exam_id = request.GET['exam']
-    return http.wrap_ok_response({"rest": 600})
+    map_exam_stage = {4: 1, 1: 3, 2: 5, 3: 7}
+    time_limit = Exam.objects.get(id=exam_id).time_limit
+    rest = 0
+    if get_stage() == map_exam_stage[int(exam_id)]:
+        rest = time_limit - (time.time() - get_stage_begin_timestamp())
+        if rest < 0:
+            rest = 0
+
+    return http.wrap_ok_response({"rest": int(rest)})
 
 
 @csrf_exempt
