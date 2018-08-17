@@ -88,14 +88,14 @@
     var user_id = "{{ user }}";
     var btn_next = $('#btn-next');
     console.log(exam_id);
-    if (exam_id === 3) {
+    if (exam_id === 2) {
         btn_next.hide();
     } else {
         btn_next.show();
     }
     var next_exam_id = exam_id+1;
     if (exam_id === 4) {
-        next_exam_id = 1;
+        next_exam_id = 2;
     }
 
     btn_next.on('click', function () {
