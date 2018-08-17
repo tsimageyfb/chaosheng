@@ -177,6 +177,12 @@ def ajax_post_answer(request):
     else:
         user_score = Score.objects.create(exam_id=exam_id, user_id=user, answer=answer_raw,
                                           score=answer_score, submitted=True)
+    # wrong rank
+    map_answers = {}
+    for i in range(len(answers)):
+        map_answers[str(i+1)] = answers[i]
+    compute_score(exam_id, map_answers)
+
     return HttpResponse(user_score.id)
 
 
