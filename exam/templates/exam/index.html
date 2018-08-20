@@ -18,38 +18,40 @@
     <h1>{{ exam.title }}</h1>
 </div>
 
-<div id="div-exam" class="container text-center">
-    {% for question in questions %}
-        <hr>
-        {% with index=forloop.counter %}
-        <label style="font-size: 30px;color: #2e6da4">{{ index }}、</label>
-        {% with material=materials|key:question.id %}
-        {% for option in material.options %}
-            {% with option_index=forloop.counter %}
-            <label class="radio-inline" style="font-size: 30px;border-radius: 1em">
-                <input class="radio-option" type="radio"  value="{{ option_index }}" name="radio-question-{{ index }}" data-index="{{ index }}"><font style="font-size: 30px;color: #2e6da4">{{ option }}</font>
-            </label>
-            {% endwith %}
-        {% endfor %}
-        <br>
-        {% if question.material_type == 1 %}
-            {% for image in material.images %}
-                {% with item=forloop.counter %}
-                <label style="font-size: 20px">{{ index }}-{{ item }}</label>
-                <img style="width: 380px;height: 290px;margin-right: 20px;margin-bottom: 10px;margin-top: 10px;" src="{{ image }}" class="pimg">
+{% if stage == obj_stage %}
+    <div id="div-exam" class="container text-center">
+        {% for question in questions %}
+            <hr>
+            {% with index=forloop.counter %}
+            <label style="font-size: 30px;color: #2e6da4">{{ index }}、</label>
+            {% with material=materials|key:question.id %}
+            {% for option in material.options %}
+                {% with option_index=forloop.counter %}
+                <label class="radio-inline" style="font-size: 30px;border-radius: 1em">
+                    <input class="radio-option" type="radio"  value="{{ option_index }}" name="radio-question-{{ index }}" data-index="{{ index }}"><font style="font-size: 30px;color: #2e6da4">{{ option }}</font>
+                </label>
                 {% endwith %}
             {% endfor %}
-        {% elif question.material_type == 2 %}
-            {% for video in material.videos %}
-                <video style="width: 400px;height: 400px" src="{{ video }}"  controls="controls">
-                    您的浏览器不支持播放，请使用chrome
-                </video>
-            {% endfor %}
-        {% endif %}
-        {% endwith %}
-        {% endwith %}
-    {% endfor %}
-</div>
+            <br>
+            {% if question.material_type == 1 %}
+                {% for image in material.images %}
+                    {% with item=forloop.counter %}
+                    <label style="font-size: 20px">{{ index }}-{{ item }}</label>
+                    <img style="width: 380px;height: 290px;margin-right: 20px;margin-bottom: 10px;margin-top: 10px;" src="{{ image }}" class="pimg">
+                    {% endwith %}
+                {% endfor %}
+            {% elif question.material_type == 2 %}
+                {% for video in material.videos %}
+                    <video style="width: 400px;height: 400px" src="{{ video }}"  controls="controls">
+                        您的浏览器不支持播放，请使用chrome
+                    </video>
+                {% endfor %}
+            {% endif %}
+            {% endwith %}
+            {% endwith %}
+        {% endfor %}
+    </div>
+{% endif %}
 
 <div class="container text-center">
     <hr>
