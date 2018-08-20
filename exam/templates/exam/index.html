@@ -51,14 +51,22 @@
             {% endwith %}
         {% endfor %}
     </div>
-{% endif %}
 
-<div class="container text-center">
-    <hr>
-    <button id="btn-main" data-toggle="modal" data-target="#modal-confirm" class="btn btn-primary">提交答卷</button>
-    <button id="btn-show-exam" class="btn btn-info">打开卷子</button>
+    <div id="div-submit" class="container text-center">
+        <hr>
+        <button id="btn-main" data-toggle="modal" data-target="#modal-confirm" class="btn btn-primary">提交答卷</button>
     <br>
 </div>
+{% else %}
+    <div id="div-wait" class="container text-center">
+        <hr>
+        <label>请您耐心等待工作人员开放本环节答题通道，谢谢</label>
+        <br>
+        <button id="btn-show-exam" class="btn btn-info">打开卷子</button>
+        <br>
+    </div>
+{% endif %}
+
 
 <div id="outerdiv" style="position:fixed;top:0;left:0;background:rgba(0,0,0,0.7);z-index:2;width:100%;height:100%;display:none;">
     <div id="innerdiv" style="position:absolute;">
@@ -231,15 +239,4 @@
     $('#btn-show-exam').on('click', function () {
        location.reload();
     });
-    var obj_stage = "{{ obj_stage }}";
-    var stage = "{{ stage }}";
-    if (stage !== obj_stage) {
-        $('#div-exam').hide();
-        $('#btn-main').hide();
-        $('#btn-show-exam').show();
-    } else {
-        $('#div-exam').show();
-        $('#btn-main').show();
-        $('#btn-show-exam').hide();
-    }
 </script>
