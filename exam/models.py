@@ -52,6 +52,10 @@ class User(models.Model):
     phone = models.CharField(max_length=18, default='', blank=True)
     address = models.CharField(max_length=128, default='', blank=True)
 
+    prov_city = models.CharField(max_length=64, default='', blank=True)  # 省市
+    work_place = models.CharField(max_length=128, default='', blank=True)  # 工作单位
+    job_title = models.CharField(max_length=32, default='', blank=True)  # 年资
+
     created_at = models.DateTimeField(auto_now_add=True, editable=False)
     updated_at = models.DateTimeField(auto_now=True, editable=False)
 

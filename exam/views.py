@@ -129,6 +129,9 @@ def ajax_create_user(request):
     user_type = request.POST.get('user_type', 0)
     address = request.POST.get('address', '')
     account = request.POST.get('account', '')
+    prov_city = request.POST.get('prov_city', '')
+    job_title = request.POST.get('job_title', '')
+    work_place = request.POST.get('work_place', '')
 
     if account != '':
         # 是代表队
@@ -141,7 +144,8 @@ def ajax_create_user(request):
         # 是观众
         user = User.objects.filter(phone=phone, user_type=user_type)
         if len(user) == 0:
-            user = User.objects.create(phone=phone, user_type=user_type, address=address)
+            user = User.objects.create(phone=phone, user_type=user_type, address=address, prov_city=prov_city,
+                                       job_title=job_title, work_place=work_place)
         else:
             user = user[0]
         request.session['user_id'] = user.id
@@ -314,7 +318,7 @@ def audience_get_progress(request):
 @csrf_exempt
 def audience_get_rank(request):
     exam_id = request.GET['exam']
-    count = request.GET['count']
+    count = request.GET.get('count', "10")
     rank = {}
     for aud_type in AUDIENCE_TYPE:
         rank[AUDIENCE_KEY[aud_type]] = get_audience_rank(exam_id, int(count), aud_type)

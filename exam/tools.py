@@ -178,5 +178,7 @@ def get_audience_rank(exam_id, count, audience_type):
     for i in range(count):
         if len(scores) > i:
             score = scores[i]
-            result.append({'name': map_user[score.user_id].name, 'order': i+1, 'phone': map_user[score.user_id].phone[-4:], 'score': score.score})
+            result.append({'name': map_user[score.user_id].name, 'order': i+1,
+                           'phone': map_user[score.user_id].phone[-4:], 'score': score.score,
+                           'come_from': map_user[score.user_id].prov_city+map_user[score.user_id].work_place})
     return result

@@ -64,15 +64,6 @@
     </div>
     <hr>
 
-{#    <label>观众类别<font style="color: orangered;">*</font>: </label>#}
-{#    <label class="radio-inline">#}
-{#        <input id="input-side-in" type="radio" name="radio-side" value="1">场内观众#}
-{#    </label>#}
-{#    <label class="radio-inline">#}
-{#        <input id="input-side-out" type="radio" name="radio-side" value="2">场外观众#}
-{#    </label>#}
-{#    <br>#}
-
 </div>
 
 <div class="container text-center">
@@ -97,7 +88,7 @@
         user_type = 1
     }
 
-    $("#input-phone").focus();
+    $("#input-name").focus();
 
     $('.li-year').on('click', function () {
         var year = $(this).text();
@@ -124,10 +115,24 @@
             return;
         }
         var addr = $('#text-addr').val();
+        var job_title = $('#btn-year').text();
+        var province = $('#s1').val();
+        var city = $('#s2').val();
+        var work_place = $('#input-workplace').val();
+        var default_select = '请选择';
+        if (job_title === default_select) {
+            job_title = '';
+        }
+        if (province === default_select) {
+            province = '';
+        }
+        if (city === default_select) {
+            city = '';
+        }
         $.ajax({
             url: "/exam/ajax-create-user",
             method: "POST",
-            data: {phone: phone, user_type: user_type, address: addr},
+            data: {phone: phone, user_type: user_type, address: addr, prov_city: province+city, job_title: job_title, work_place: work_place},
             success: function (msg) {
                 window.location.href = "answer?exam={{ exam_id }}&user="+msg;
             },
