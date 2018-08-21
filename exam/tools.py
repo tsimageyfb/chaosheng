@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from .models import Exam, Question, User, Score, QuestionStatistics
 import json
+import operator
 
 ACCOUNT_ROBOT = 'robot'
 
@@ -13,6 +14,70 @@ NAME_TEAMS = {'BEIJING1': '北京1队', 'BEIJING2': '北京2队', 'SHANGHAI': '�
 AUDIENCE_TYPE = [1, 2]
 AUDIENCE_NAME = {1: "场内观众", 2: "场外观众"}
 AUDIENCE_KEY = {1: "inner", 2: "outer"}
+
+
+def get_pre_exam_winner(exam_id):
+    if int(exam_id) != 2 and int(exam_id) != 3:
+        # 非半决赛、决赛，都没有累加分
+        return ACCOUNT_TEAMS
+
+    pre_exam_id = 0
+    count = 0
+    # 半决赛
+    if int(exam_id) == 2:
+        pre_exam_id = 1
+        count = 6
+    # 决赛
+    if int(exam_id) == 3:
+        pre_exam_id = 2
+        count = 2
+
+    teams = []
+    winner_teams = []
+    for account in ACCOUNT_TEAMS:
+        team_user = get_team_user(account)
+        team_sore = Score.objects.filter(exam_id=pre_exam_id, user_id=team_user.id)
+        if len(team_sore) > 0:
+            team_sore = team_sore[0]
+            teams.append({"name": NAME_TEAMS[account], "account": account, "score": team_sore.score})
+    if len(teams) == 0:
+        return ACCOUNT_TEAMS
+
+    teams = sorted(teams, key=operator.itemgetter('score'), reverse=True)
+    for i in range(0, count):
+        if len(teams) > i:
+            winner_teams.append(teams[i]['account'])
+
+    return winner_teams
+
+
+def get_pre_exam_score(exam_id, account, user_id):
+    if int(exam_id) != 2 and int(exam_id) != 3:
+        # 非半决赛、决赛，都没有累加分
+        return 0
+
+    pre_exam_id = 0
+    # 半决赛
+    if int(exam_id) == 2:
+        pre_exam_id = 1
+    # 决赛
+    if int(exam_id) == 3:
+        pre_exam_id = 2
+
+    if account is not None and account != "":
+        if account == ACCOUNT_ROBOT:
+            user = get_robot_user()
+        else:
+            user = get_team_user(account)
+    else:
+        user = User.objects.get(id=user_id)
+
+    # get pre exam score
+    pre_exam_score = Score.objects.filter(exam_id=pre_exam_id, user_id=user.id)
+    if len(pre_exam_score) > 0:
+        pre_exam_score = pre_exam_score[0]
+        return pre_exam_score.score
+    return 0
 
 
 def compute_score(exam_id, answers_dic):
@@ -84,7 +149,14 @@ def get_team_user(account):
 
 
 def get_audience_progress(exam_id, audience_type):
-    return {'name': AUDIENCE_NAME[audience_type], 'total': 100, 'submit': 80}
+    users = User.objects.filter(user_type=audience_type)
+    user_ids = []
+    if len(users) > 0:
+        for user in users:
+            user_ids.append(user.id)
+    submit = len(Score.objects.filter(exam_id=exam_id, user_id__in=user_ids))
+
+    return {'name': AUDIENCE_NAME[audience_type], 'total': len(users), 'submit': submit}
 
 
 def get_audience_rank(exam_id, count, audience_type):

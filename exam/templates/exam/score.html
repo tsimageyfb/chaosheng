@@ -32,6 +32,12 @@
 </html>
 
 <script>
+    //防止页面后退
+    history.pushState(null, null, document.URL);
+    window.addEventListener('popstate', function () {
+        history.pushState(null, null, document.URL);
+    });
+
     var count = {{ count }};
     var right = {{ right }};
     var chart = Highcharts.chart('chart-score', {
@@ -87,12 +93,16 @@
     } else {
         btn_next.show();
     }
+    var next_exam_id = exam_id+1;
+    if (exam_id === 4) {
+        next_exam_id = 1;
+    }
 
     btn_next.on('click', function () {
         if (account !== "") {
-            window.location.href = "/exam/answer?account="+account+"&exam="+(exam_id+1);
+            window.location.href = "/exam/answer?account="+account+"&exam="+next_exam_id;
         } else {
-            window.location.href = "/exam/answer?user="+user_id+"&exam="+(exam_id+1);
+            window.location.href = "/exam/answer?user="+user_id+"&exam="+next_exam_id;
         }
     })
 </script>

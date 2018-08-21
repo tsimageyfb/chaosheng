@@ -83,6 +83,13 @@
 </html>
 
 <script>
+    var user_type = "{{ user_type }}";
+    if (user_type === "outer") {
+        user_type = 2
+    } else {
+        user_type = 1
+    }
+
     $("#input-phone").focus();
 
     $('.li-year').on('click', function () {
@@ -109,13 +116,11 @@
             alert('手机号码不可不填');
             return;
         }
-        var radio_side = $("[name='radio-side']").filter(":checked");
-        var side = radio_side.val();
         var addr = $('#text-addr').val();
         $.ajax({
             url: "/exam/ajax-create-user",
             method: "POST",
-            data: {phone: phone, user_type: side, address: addr},
+            data: {phone: phone, user_type: user_type, address: addr},
             success: function (msg) {
                 window.location.href = "answer?exam={{ exam_id }}&user="+msg;
             },

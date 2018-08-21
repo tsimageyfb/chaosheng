@@ -26,4 +26,5 @@ urlpatterns = [
     url(r'^rest-seconds', views.rest_seconds, name='rest-seconds'),
 
     url(r'^wrong-rank', views.wrong_rank, name='wrong-rank'),
+    url(r'^show', views.show_exam, name='show-exam'),
 ]

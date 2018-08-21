@@ -16,6 +16,8 @@ class Question(models.Model):
     material_ids = models.CharField(max_length=64)
     # 正确答案，半角逗号隔开
     correct_answer = models.CharField(max_length=64)
+    # 解析图片
+    explain_image_link = models.CharField(max_length=256, default='', blank=True)
 
     created_at = models.DateTimeField(auto_now_add=True, editable=False)
     updated_at = models.DateTimeField(auto_now=True, editable=False)

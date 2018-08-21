@@ -34,7 +34,7 @@
         <br>
         {% if question.material_type == 1 %}
             {% for image in material.images %}
-                <img style="width: 200px;height: 150px;margin-right: 20px" src="{{ image }}" class="pimg">
+                <img style="width: 400px;height: 300px;margin-right: 20px;margin-bottom: 10px;margin-top: 10px;" src="{{ image }}" class="pimg">
             {% endfor %}
         {% elif question.material_type == 2 %}
             {% for video in material.videos %}
@@ -50,7 +50,7 @@
 
 <div class="container text-center">
     <hr>
-    <button id="btn-commit" class="btn btn-primary">提交答卷</button>
+    <button data-toggle="modal" data-target="#modal-confirm" class="btn btn-primary">提交答卷</button>
     <br>
 </div>
 
@@ -60,6 +60,27 @@
     </div>
 </div>
 </body>
+
+
+<div id="modal-confirm" class="modal fade" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">提交答卷确认</h4>
+      </div>
+      <div class="modal-body">
+          <label id="label-title"></label>
+          <br>
+          <textarea title="未答题" style="width: 90%; height: 90%;border-width: 0" id="textarea-content"></textarea>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+        <button id="btn-commit" class="btn btn-info">确认</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
 
 </html>
 
@@ -92,7 +113,7 @@
                 method: "POST",
                 data: {exam: exam_id, account: account},
                 success: function (msg) {
-                    window.location.href = "/exam/score?id="+msg+"&exam="+exam_id+"&account="+account;
+                    window.location.href = "/exam/score?exam="+exam_id+"&account="+account;
                 },
                 error: function(jqXHR, textStatus) {
                     alert("Request failed: " + textStatus);
@@ -118,7 +139,7 @@
                 method: "POST",
                 data: {answer: answer.join(","), user: user_id, exam: exam_id},
                 success: function (msg) {
-                    window.location.href = "/exam/score?id="+msg+"&exam="+exam_id+"&user="+user_id;
+                    window.location.href = "/exam/score?exam="+exam_id+"&user="+user_id;
                 },
                 error: function(jqXHR, textStatus) {
                     alert("Request failed: " + textStatus);
@@ -175,4 +196,25 @@
         }));
     }
 
+</script>
+
+<script>
+    $('#modal-confirm').on('show.bs.modal', function (event) {
+        var unanswer = [];
+        {% for question in questions %}
+            {% with index=forloop.counter %}
+                var radio_check = $("[name='radio-question-{{ index }}']").filter(":checked");
+                var each_answer = radio_check.val();
+                if (radio_check.length === 0) {
+                    unanswer.push({{ index }});
+                }
+            {% endwith %}
+        {% endfor %}
+        $('#textarea-content').text(unanswer);
+        if (unanswer.length === 0) {
+            $('#label-title').text("全部答完");
+        } else {
+            $('#label-title').text("未答题目：");
+        }
+    })
 </script>

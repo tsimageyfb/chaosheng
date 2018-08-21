@@ -2,25 +2,37 @@
 from __future__ import unicode_literals
 
 from django.shortcuts import render
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from django.views.decorators.csrf import csrf_exempt
 from questionnaire import http
 import json
 from .models import Exam, Question, MaterialImage, User, Score, MaterialVideo, QuestionStatistics
 from .tools import compute_score, get_robot_user, get_each_team_progress, get_team_user, ACCOUNT_TEAMS, ACCOUNT_ROBOT
-from .tools import AUDIENCE_KEY, AUDIENCE_TYPE, get_audience_rank, get_audience_progress, NAME_TEAMS
+from .tools import AUDIENCE_KEY, AUDIENCE_TYPE, get_audience_rank, get_audience_progress, NAME_TEAMS, get_pre_exam_score
+from .tools import get_pre_exam_winner
 import django.utils.timezone as timezone
 import operator
 
 
 def entry(request):
+    user_id = request.session.get('user_id', '0')
+    exam_id = request.session.get('exam_id', '4')
+    # stage: 1-exam, 2-score
+    stage = request.session.get('stage', '1')
+
+    if user_id != '0':
+        if stage == '1':
+            return HttpResponseRedirect("answer?exam="+str(exam_id)+"&user="+str(user_id))
+        else:
+            return HttpResponseRedirect("score?exam="+str(exam_id)+"&user="+str(user_id))
+
     user_type = request.GET.get("user_type", "inner")
-    context = {"exam_id": 1, "user_type": user_type}
+    context = {"exam_id": 4, "user_type": user_type}
     return render(request, 'exam/entry.html', context)
 
 
 def entry_team(request):
-    context = {"exam_id": 1, "team": NAME_TEAMS}
+    context = {"exam_id": 4, "team": NAME_TEAMS}
     return render(request, 'exam/team.html', context)
 
 
@@ -29,6 +41,9 @@ def index(request):
     user_id = request.GET.get('user', '0')
     account = request.GET.get('account', '')
     exam_id = request.GET['exam']
+    if int(exam_id) > 0:
+        request.session['exam_id'] = str(exam_id)
+        request.session['stage'] = "1"
 
     # exam
     exam = Exam.objects.get(id=exam_id)
@@ -68,12 +83,15 @@ def index(request):
 
 
 def score(request):
-    score_id = request.GET['id']
     exam_id = request.GET.get('exam', 1)
     account = request.GET.get('account', '')
     user_id = request.GET.get('user', 0)
+    request.session['stage'] = "2"
+    if account != '':
+        user = get_team_user(account)
+        user_id = user.id
 
-    ob = Score.objects.get(id=score_id)
+    ob = Score.objects.get(exam_id=exam_id, user_id=user_id)
     count = 0
     right = 0
     if ob is not None:
@@ -113,6 +131,7 @@ def ajax_create_user(request):
             user = User.objects.create(phone=phone, user_type=user_type, address=address)
         else:
             user = user[0]
+        request.session['user_id'] = user.id
     return HttpResponse(user.id)
 
 
@@ -129,13 +148,23 @@ def ajax_post_answer(request):
         question = Question.objects.get(id=qid)
         correct_answers.append(question.correct_answer)
 
-    answer_score = 0
+    answer_score = get_pre_exam_score(exam_id, None, user)
     for k in range(len(answers)):
         if answers[k] == correct_answers[k]:
             answer_score += 1
 
-    ob = Score.objects.create(exam_id=exam_id, user_id=user, answer=answer_raw, score=answer_score)
-    return HttpResponse(ob.id)
+    # find if existed
+    user_score = Score.objects.filter(exam_id=exam_id, user_id=user)
+    if len(user_score) > 0:
+        user_score = user_score[0]
+        user_score.answer = answer_raw
+        user_score.score = answer_score
+        user_score.submitted = True
+        user_score.save()
+    else:
+        user_score = Score.objects.create(exam_id=exam_id, user_id=user, answer=answer_raw,
+                                          score=answer_score, submitted=True)
+    return HttpResponse(user_score.id)
 
 
 @csrf_exempt
@@ -150,7 +179,7 @@ def robot_tick_answer(request):
     robot_user = get_robot_user()
     robot_score = Score.objects.filter(exam_id=exam_id, user_id=robot_user.id)
     if len(robot_score) == 0:
-        Score.objects.create(exam_id=exam_id, user_id=robot_user.id, answer=answer)
+        robot_score = Score.objects.create(exam_id=exam_id, user_id=robot_user.id, answer=answer)
     else:
         robot_score = robot_score[0]
         answer_new_dic = {}
@@ -177,10 +206,11 @@ def robot_submit_answer(request):
         robot_score = robot_score[0]
         robot_score.submitted = True
         # count score
+        point = get_pre_exam_score(exam_id, ACCOUNT_ROBOT, 0)
         if robot_score.answer == '':
-            point = 0
+            point += 0
         else:
-            point = compute_score(exam_id, json.loads(robot_score.answer))
+            point += compute_score(exam_id, json.loads(robot_score.answer))
 
         robot_score.elapsed_seconds = int((timezone.now()-robot_score.begin_at).total_seconds())
         robot_score.score = point
@@ -208,7 +238,7 @@ def robot_get_progress(request):
 def team_get_progress(request):
     exam_id = request.GET['exam']
     progress = []
-    for account in ACCOUNT_TEAMS:
+    for account in get_pre_exam_winner(exam_id):
         each_progress = get_each_team_progress(exam_id, account)
         progress.append(each_progress)
     return http.wrap_ok_response(progress)
@@ -305,10 +335,11 @@ def team_submit_answer(request):
         team_score = team_score[0]
         team_score.submitted = True
         # count score
+        point = get_pre_exam_score(exam_id, account, 0)
         if team_score.answer == '':
-            point = 0
+            point += 0
         else:
-            point = compute_score(exam_id, json.loads(team_score.answer))
+            point += compute_score(exam_id, json.loads(team_score.answer))
 
         team_score.elapsed_seconds = int((timezone.now()-team_score.begin_at).total_seconds())
         team_score.score = point
@@ -345,9 +376,9 @@ def wrong_rank(request):
         if i >= count:
             return http.wrap_ok_response(result)
         # get materials
-        explain_pics = []
         materials = []
         question = Question.objects.get(id=stat.question_id)
+        explain_pics = [question.explain_image_link]
         material_ids = question.material_ids.split(",")
         if question.material_type == 1:
             materials = map(lambda each: each["image_link"], MaterialImage.objects.filter(id__in=material_ids).values("image_link"))
@@ -358,3 +389,30 @@ def wrong_rank(request):
                        "correct_answer": int(question.correct_answer), "explain_pics": explain_pics})
         i += 1
     return http.wrap_ok_response(result)
+
+
+@csrf_exempt
+def show_exam(request):
+    exam_id = request.GET['exam']
+    exam = Exam.objects.get(id=exam_id)
+    question_ids = exam.questions.split(',')
+    count = 1
+    questions = []
+    for question_id in question_ids:
+        question = {}
+        question_obj = Question.objects.get(id=question_id)
+        question['question_number'] = count
+        question['material_type'] = question_obj.material_type
+        material_ids = question_obj.material_ids.split(',')
+        material_links = []
+        for material_id in material_ids:
+            if question_obj.material_type == 1:
+                material_links.append(MaterialImage.objects.get(id=material_id).image_link)
+            elif question_obj.material_type == 2:
+                material_links.append(MaterialVideo.objects.get(id=material_id).video_link)
+        question['material_links'] = material_links
+        questions.append(question)
+        count += 1
+
+    exam_data = {'exam_id': int(exam_id), 'exam_title': exam.title, 'questions': questions}
+    return http.wrap_ok_response(exam_data)
