@@ -1,2 +1,4 @@
 django
 Pillow
+whitenoise==v3.1
+
