@@ -139,6 +139,13 @@ def index(request):
     # stage
     obj_stage = get_obj_stage(exam_id)
 
+    # 判断是否要跳转
+    if get_stage() > obj_stage and int(exam_id) < 3:
+        if account != '':
+            return HttpResponseRedirect('/exam/answer?exam='+str(int(exam_id)+1)+"&account="+account)
+        elif user_id != '0':
+            return HttpResponseRedirect('/exam/answer?exam='+str(int(exam_id)+1)+"&user="+user_id)
+
     context = {"exam": exam, "questions": questions, "materials": materials, "user_id": user_id, "account": account,
                "exam_id": exam_id, "stage": get_stage(), "obj_stage": obj_stage}
     return render(request, 'exam/index.html', context)

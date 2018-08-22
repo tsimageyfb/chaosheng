@@ -264,17 +264,7 @@
 </script>
 
 <script>
-    var stage = "{{ stage }}";
-    var obj_stage = "{{ obj_stage }}";
     $('#btn-show-exam').on('click', function () {
-        if (parseInt(stage) > parseInt(obj_stage)) {
-            if (account !== "" && parseInt(exam_id) < 3) {
-                window.location.href = "/exam/answer?exam="+(parseInt(exam_id)+1).toString()+"&account="+account;
-            } else if (user_id !== "" && parseInt(exam_id) < 3) {
-                window.location.href = "/exam/answer?exam="+(parseInt(exam_id)+1).toString()+"&user="+user_id;
-            }
-        } else {
-            location.reload();
-        }
+        location.reload();
     });
 </script>
