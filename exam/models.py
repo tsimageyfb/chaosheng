@@ -61,6 +61,9 @@ class User(models.Model):
     created_at = models.DateTimeField(auto_now_add=True, editable=False)
     updated_at = models.DateTimeField(auto_now=True, editable=False)
 
+    class Meta:
+        index_together = ['phone']
+
 
 class Score(models.Model):
     exam_id = models.IntegerField()
@@ -73,6 +76,9 @@ class Score(models.Model):
 
     created_at = models.DateTimeField(auto_now_add=True, editable=False)
     updated_at = models.DateTimeField(auto_now=True, editable=False)
+
+    class Meta:
+        index_together = ['exam_id', 'user_id']
 
 
 class MaterialVideo(models.Model):
@@ -91,6 +97,9 @@ class QuestionStatistics(models.Model):
 
     created_at = models.DateTimeField(auto_now_add=True, editable=False)
     updated_at = models.DateTimeField(auto_now=True, editable=False)
+
+    class Meta:
+        index_together = ['question_id']
 
 
 class Stage(models.Model):
