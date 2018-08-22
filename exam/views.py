@@ -137,6 +137,14 @@ def index(request):
                 materials[question.id].update({"videos": videos})
 
     # stage
+    obj_stage = get_obj_stage(exam_id)
+
+    context = {"exam": exam, "questions": questions, "materials": materials, "user_id": user_id, "account": account,
+               "exam_id": exam_id, "stage": get_stage(), "obj_stage": obj_stage}
+    return render(request, 'exam/index.html', context)
+
+
+def get_obj_stage(exam_id):
     obj_stage = 0
     if int(exam_id) == 4:
         obj_stage = 1
@@ -146,10 +154,7 @@ def index(request):
         obj_stage = 5
     if int(exam_id) == 3:
         obj_stage = 7
-
-    context = {"exam": exam, "questions": questions, "materials": materials, "user_id": user_id, "account": account,
-               "exam_id": exam_id, "stage": get_stage(), "obj_stage": obj_stage}
-    return render(request, 'exam/index.html', context)
+    return obj_stage
 
 
 def score(request):
@@ -231,9 +236,11 @@ def ajax_post_answer(request):
         correct_answers.append(question.correct_answer)
 
     answer_score = get_pre_exam_score(exam_id, None, user)
-    for k in range(len(answers)):
-        if answers[k] == correct_answers[k]:
-            answer_score += 1
+    # 没超时才算分
+    if get_stage() == get_obj_stage(exam_id):
+        for k in range(len(answers)):
+            if answers[k] == correct_answers[k]:
+                answer_score += 1
 
     # find if existed
     user_score = Score.objects.filter(exam_id=exam_id, user_id=user)
