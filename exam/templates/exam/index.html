@@ -18,7 +18,7 @@
     <h1>{{ exam.title }}</h1>
 </div>
 
-{% if stage == obj_stage %}
+{% if stage == obj_stage or exam_id == 4 and stage >= 1 %}
     <div id="div-exam" class="container text-center">
         {% for question in questions %}
             <hr>
