@@ -85,10 +85,10 @@
 
     var exam_id = {{ exam_id }};
     var account = "{{ account }}";
-    var user_id = "{{ user }}";
+    var user_id = "{{ user_id }}";
     var btn_next = $('#btn-next');
     console.log(exam_id);
-    if (exam_id === 3) {
+    if (exam_id === 3 || exam_id === 4) {
         btn_next.hide();
     } else {
         btn_next.show();
