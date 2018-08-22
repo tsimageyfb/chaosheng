@@ -125,6 +125,7 @@ def statistics(request):
 
 @csrf_exempt
 def ajax_create_user(request):
+    name = request.POST.get('name', '')
     phone = request.POST.get('phone', '')
     user_type = request.POST.get('user_type', 0)
     address = request.POST.get('address', '')
@@ -132,6 +133,8 @@ def ajax_create_user(request):
     prov_city = request.POST.get('prov_city', '')
     job_title = request.POST.get('job_title', '')
     work_place = request.POST.get('work_place', '')
+    work_place_level = request.POST.get('work_place_level', '')
+    work_year = request.POST.get('work_year', '')
 
     if account != '':
         # 是代表队
@@ -145,7 +148,8 @@ def ajax_create_user(request):
         user = User.objects.filter(phone=phone, user_type=user_type)
         if len(user) == 0:
             user = User.objects.create(phone=phone, user_type=user_type, address=address, prov_city=prov_city,
-                                       job_title=job_title, work_place=work_place)
+                                       job_title=job_title, work_place=work_place, work_place_level=work_place_level,
+                                       work_year=work_year, name=name)
         else:
             user = user[0]
         request.session['user_id'] = user.id

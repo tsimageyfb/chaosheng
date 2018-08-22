@@ -52,14 +52,27 @@
     <br>
     <label class="text-align">您的工作单位: <input id="input-workplace"></label>
     <br>
-    <label class="text-align">您的年资: </label>
+    <label class="text-align">所在科室: <input id="input-cell" style="width: 100px"></label>
+    <label>从事年限: <input id="input-year"  style="width: 33px"></label>
+    <br>
+    <label class="text-align">您的职称: </label>
     <div class="dropdown" style="display: inline">
         <button id="btn-year" class="btn btn-default btn-xs" type="button" data-toggle="dropdown" data-key="">请选择<span class="caret"></span></button>
         <ul class="dropdown-menu">
-            <li class="li-year" data-key="1"><a>初级医师</a></li>
-            <li class="li-year" data-key="2"><a>中级医师</a></li>
-            <li class="li-year" data-key="3"><a>高级医师</a></li>
-            <li class="li-year" data-key="4"><a>其他</a></li>
+            <li class="li-year" data-key="1"><a>住院医师</a></li>
+            <li class="li-year" data-key="2"><a>主治医师</a></li>
+            <li class="li-year" data-key="3"><a>副主任医师</a></li>
+            <li class="li-year" data-key="4"><a>主任医师</a></li>
+            <li class="li-year" data-key="5"><a>其他</a></li>
+        </ul>
+    </div>
+    <label style="margin-left: 10px">医院级别: </label>
+    <div class="dropdown" style="display: inline">
+        <button id="btn-workplace-level" class="btn btn-default btn-xs" type="button" data-toggle="dropdown" data-key="">请选择<span class="caret"></span></button>
+        <ul class="dropdown-menu">
+            <li class="li-workplace-level" data-key="1"><a>一级</a></li>
+            <li class="li-workplace-level" data-key="2"><a>二级</a></li>
+            <li class="li-workplace-level" data-key="3"><a>三级</a></li>
         </ul>
     </div>
     <hr>
@@ -95,6 +108,11 @@
         $('#btn-year').text(year);
         $('#btn-year').data('key', $(this).data('key'))
     });
+    $('.li-workplace-level').on('click', function () {
+        var level = $(this).text();
+        $('#btn-workplace-level').text(level);
+        $('#btn-workplace-level').data('key', $(this).data('key'))
+    });
 
     $("[name='radio-side']").click(function () {
         var side_click = $(this).val();
@@ -114,11 +132,16 @@
             alert('手机号码不可不填');
             return;
         }
+        var name = $('#input-name').val();
         var addr = $('#text-addr').val();
         var job_title = $('#btn-year').text();
+        var work_year = $('#input-year').val();
         var province = $('#s1').val();
         var city = $('#s2').val();
+        var work_place_level = $('#btn-workplace-level').text();
         var work_place = $('#input-workplace').val();
+        var work_cell = $('#input-cell').val();
+        work_place = work_place + ":" + work_cell;
         var default_select = '请选择';
         if (job_title === default_select) {
             job_title = '';
@@ -132,7 +155,8 @@
         $.ajax({
             url: "/exam/ajax-create-user",
             method: "POST",
-            data: {phone: phone, user_type: user_type, address: addr, prov_city: province+city, job_title: job_title, work_place: work_place},
+            data: {phone: phone, user_type: user_type, address: addr, prov_city: province+city, job_title: job_title,
+                work_place: work_place, work_year: work_year, work_place_level: work_place_level, name: name},
             success: function (msg) {
                 window.location.href = "answer?exam={{ exam_id }}&user="+msg;
             },

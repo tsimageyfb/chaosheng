@@ -54,7 +54,9 @@ class User(models.Model):
 
     prov_city = models.CharField(max_length=64, default='', blank=True)  # 省市
     work_place = models.CharField(max_length=128, default='', blank=True)  # 工作单位
-    job_title = models.CharField(max_length=32, default='', blank=True)  # 年资
+    job_title = models.CharField(max_length=32, default='', blank=True)  # 职称
+    work_place_level = models.CharField(max_length=24, default='', blank=True)  # 医院等级
+    work_year = models.CharField(max_length=24, default='', blank=True)  # 工作年限
 
     created_at = models.DateTimeField(auto_now_add=True, editable=False)
     updated_at = models.DateTimeField(auto_now=True, editable=False)
