@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>中控台</title>
+    {% load staticfiles %}
+    {% load dict_op %}
+    <link rel="stylesheet" type="text/css" href="{% static 'exam/bootstrap.min.css' %}" />
+    <script src="{% static 'exam/jquery-3.2.1.min.js' %}"></script>
+    <script src="{% static 'exam/bootstrap.min.js' %}"></script>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+</head>
+
+<body>
+
+<h1 class="container jumbotron text-center">中控台</h1>
+
+<div class="container text-center">
+    <h4>当前状态</h4>
+    <label style="font-size: 40px;color: #2e6da4">{{ stage }}</label>
+    <hr>
+    <button id="btn-sub" class="btn btn-danger btn-lg" style="margin-right: 20px;">后退</button>
+    <button id="btn-add" class="btn btn-primary btn-lg">前进</button>
+</div>
+
+</body>
+</html>
+
+<script>
+    $('#btn-sub').on('click', function () {
+        $.ajax({
+            url: "/exam/ajax-sub-stage",
+            method: "POST",
+            data: {},
+            success: function (msg) {
+                location.reload();
+            },
+            error: function(jqXHR, textStatus) {
+                alert("Request failed: " + textStatus);
+            }
+        });
+    });
+    $('#btn-add').on('click', function () {
+        $.ajax({
+            url: "/exam/ajax-add-stage",
+            method: "POST",
+            data: {},
+            success: function (msg) {
+                location.reload();
+            },
+            error: function(jqXHR, textStatus) {
+                alert("Request failed: " + textStatus);
+            }
+        });
+    });
+
+</script>

@@ -7,6 +7,7 @@ urlpatterns = [
     url(r'^answer/$', views.index, name='answer'),
     url(r'^score/$', views.score, name='score'),
     url(r'^statistics/$', views.statistics, name='statistics'),
+    url(r'^stage/$', views.stage, name='stage'),
 
     url(r'^ajax-create-user', views.ajax_create_user, name='create-user'),
     url(r'^ajax-post-answer', views.ajax_post_answer, name='post-answer'),
@@ -27,4 +28,9 @@ urlpatterns = [
 
     url(r'^wrong-rank', views.wrong_rank, name='wrong-rank'),
     url(r'^show', views.show_exam, name='show-exam'),
+
+    url(r'^get-stage', views.req_get_stage, name='get-stage'),
+    url(r'^set-stage', views.req_set_stage, name='set-stage'),
+    url(r'^ajax-add-stage', views.add_stage, name='add-stage'),
+    url(r'^ajax-sub-stage', views.sub_stage, name='sub-stage'),
 ]

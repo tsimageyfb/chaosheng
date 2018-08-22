@@ -2,7 +2,7 @@
 from __future__ import unicode_literals
 
 from django.contrib import admin
-from .models import Question, Exam, MaterialImage, User, Score, MaterialVideo, QuestionStatistics
+from .models import Question, Exam, MaterialImage, User, Score, MaterialVideo, QuestionStatistics, Stage
 
 
 class QuestionAdmin(admin.ModelAdmin):
@@ -33,6 +33,10 @@ class QuestionStatisticsAdmin(admin.ModelAdmin):
     list_display = ('id', 'question_id', 'wrong_count', 'user_type')
 
 
+class StageAdmin(admin.ModelAdmin):
+    list_display = ('id', 'stage', 'begin_timestamp')
+
+
 admin.site.register(Question, QuestionAdmin)
 admin.site.register(Exam, ExamAdmin)
 admin.site.register(MaterialImage, MaterialImageAdmin)
@@ -40,3 +44,4 @@ admin.site.register(User, UserAdmin)
 admin.site.register(Score, ScoreAdmin)
 admin.site.register(MaterialVideo, MaterialVideoAdmin)
 admin.site.register(QuestionStatistics, QuestionStatisticsAdmin)
+admin.site.register(Stage, StageAdmin)

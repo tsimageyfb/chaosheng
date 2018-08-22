@@ -12,6 +12,8 @@ from .tools import AUDIENCE_KEY, AUDIENCE_TYPE, get_audience_rank, get_audience_
 from .tools import get_pre_exam_winner
 import django.utils.timezone as timezone
 import operator
+from .stage import get_stage, get_stage_begin_timestamp, set_stage, get_stage_name
+import time
 
 
 def entry(request):
@@ -77,8 +79,19 @@ def index(request):
                         videos.append(video.video_link)
                 materials[question.id].update({"videos": videos})
 
+    # stage
+    obj_stage = 0
+    if int(exam_id) == 4:
+        obj_stage = 1
+    if int(exam_id) == 1:
+        obj_stage = 3
+    if int(exam_id) == 2:
+        obj_stage = 5
+    if int(exam_id) == 3:
+        obj_stage = 7
+
     context = {"exam": exam, "questions": questions, "materials": materials, "user": user_id, "account": account,
-               "exam_id": exam_id}
+               "exam_id": exam_id, "stage": get_stage(), "obj_stage": obj_stage}
     return render(request, 'exam/index.html', context)
 
 
@@ -116,6 +129,9 @@ def ajax_create_user(request):
     user_type = request.POST.get('user_type', 0)
     address = request.POST.get('address', '')
     account = request.POST.get('account', '')
+    prov_city = request.POST.get('prov_city', '')
+    job_title = request.POST.get('job_title', '')
+    work_place = request.POST.get('work_place', '')
 
     if account != '':
         # 是代表队
@@ -128,7 +144,8 @@ def ajax_create_user(request):
         # 是观众
         user = User.objects.filter(phone=phone, user_type=user_type)
         if len(user) == 0:
-            user = User.objects.create(phone=phone, user_type=user_type, address=address)
+            user = User.objects.create(phone=phone, user_type=user_type, address=address, prov_city=prov_city,
+                                       job_title=job_title, work_place=work_place)
         else:
             user = user[0]
         request.session['user_id'] = user.id
@@ -164,6 +181,12 @@ def ajax_post_answer(request):
     else:
         user_score = Score.objects.create(exam_id=exam_id, user_id=user, answer=answer_raw,
                                           score=answer_score, submitted=True)
+    # wrong rank
+    map_answers = {}
+    for i in range(len(answers)):
+        map_answers[str(i+1)] = answers[i]
+    compute_score(exam_id, map_answers)
+
     return HttpResponse(user_score.id)
 
 
@@ -272,7 +295,15 @@ def team_get_rank(request):
 @csrf_exempt
 def rest_seconds(request):
     exam_id = request.GET['exam']
-    return http.wrap_ok_response({"rest": 600})
+    map_exam_stage = {4: 1, 1: 3, 2: 5, 3: 7}
+    time_limit = Exam.objects.get(id=exam_id).time_limit
+    rest = 0
+    if get_stage() == map_exam_stage[int(exam_id)]:
+        rest = time_limit - (time.time() - get_stage_begin_timestamp())
+        if rest < 0:
+            rest = 0
+
+    return http.wrap_ok_response({"rest": int(rest)})
 
 
 @csrf_exempt
@@ -287,7 +318,7 @@ def audience_get_progress(request):
 @csrf_exempt
 def audience_get_rank(request):
     exam_id = request.GET['exam']
-    count = request.GET['count']
+    count = request.GET.get('count', "10")
     rank = {}
     for aud_type in AUDIENCE_TYPE:
         rank[AUDIENCE_KEY[aud_type]] = get_audience_rank(exam_id, int(count), aud_type)
@@ -416,3 +447,65 @@ def show_exam(request):
 
     exam_data = {'exam_id': int(exam_id), 'exam_title': exam.title, 'questions': questions}
     return http.wrap_ok_response(exam_data)
+
+
+@csrf_exempt
+def req_get_stage(request):
+    return http.wrap_ok_response({"stage": get_stage()})
+
+
+@csrf_exempt
+def req_set_stage(request):
+    stage_obj = request.GET['stage']
+    set_stage(stage_obj)
+    return http.wrap_ok_response(None)
+
+
+def stage(request):
+    context = {"stage": get_stage_name(get_stage())}
+    return render(request, 'exam/stage.html', context)
+
+
+@csrf_exempt
+def add_stage(request):
+    stage_now = get_stage()
+    if int(stage_now) < 8:
+        set_stage(int(stage_now) + 1)
+
+    # 可能要帮助代表队提交
+    stage_to = int(stage_now) + 1
+    exam_id = 0
+    if stage_to in [2, 4, 6, 8]:
+        if stage_to == 2:
+            exam_id = 4
+        if stage_to == 4:
+            exam_id = 1
+        if stage_to == 6:
+            exam_id = 2
+        if stage_to == 8:
+            exam_id = 3
+    scores = Score.objects.filter(exam_id=exam_id, submitted=False)
+    if len(scores) > 0:
+        for each in scores:
+            each.submitted = True
+            user = User.objects.get(id=each.user_id)
+            # count score
+            point = get_pre_exam_score(exam_id, user.account, 0)
+            if each.answer == '':
+                point += 0
+            else:
+                point += compute_score(exam_id, json.loads(each.answer))
+
+            each.elapsed_seconds = int((timezone.now() - each.begin_at).total_seconds())
+            each.score = point
+            each.save()
+
+    return HttpResponse("ok")
+
+
+@csrf_exempt
+def sub_stage(request):
+    stage_now = get_stage()
+    if int(stage_now) > 0:
+        set_stage(int(stage_now) - 1)
+    return HttpResponse("ok")

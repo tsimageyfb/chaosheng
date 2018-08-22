@@ -161,6 +161,24 @@ def get_audience_progress(exam_id, audience_type):
 
 def get_audience_rank(exam_id, count, audience_type):
     result = []
+    # get users
+    users = User.objects.filter(user_type=audience_type)
+    map_user = {}
+    for u in users:
+        map_user[u.id] = u
+
+    if len(users) == 0:
+        return result
+    user_ids = map(lambda each: each.id, users)
+    scores = Score.objects.filter(exam_id=exam_id, user_id__in=user_ids)
+    if len(scores) == 0:
+        return result
+
+    scores = sorted(scores, key=lambda each: each.score, reverse=True)
     for i in range(count):
-        result.append({'name': AUDIENCE_NAME[audience_type], 'order': i+1, 'phone': 1314, 'score': 50-i})
+        if len(scores) > i:
+            score = scores[i]
+            result.append({'name': map_user[score.user_id].name, 'order': i+1,
+                           'phone': map_user[score.user_id].phone[-4:], 'score': score.score,
+                           'come_from': map_user[score.user_id].prov_city+map_user[score.user_id].work_place})
     return result
