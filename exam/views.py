@@ -14,22 +14,95 @@ import django.utils.timezone as timezone
 import operator
 from .stage import get_stage, get_stage_begin_timestamp, set_stage, get_stage_name
 import time
+<<<<<<< HEAD
+=======
+
+
+def simulate_exam(request):
+    # exam
+    exam = Exam.objects.get(id=4)
+
+    # questions
+    questions = []
+    materials = {}
+    question_ids = exam.questions.split(",")
+    if len(question_ids) > 0:
+        questions = Question.objects.filter(id__in=question_ids)
+        for question in questions:
+            materials[question.id] = {"options": question.answer_options.split(",")}
+            if question.material_type == 1:
+                # images
+                image_ids = question.material_ids.split(",")
+                image_objs = MaterialImage.objects.filter(id__in=image_ids)
+                images = []
+                for image in image_objs:
+                    if image.image_link != "":
+                        images.append(image.image_link)
+                    else:
+                        images.append("/statics/" + str(image.image))
+                materials[question.id].update({"images": images})
+            elif question.material_type == 2:
+                # video
+                video_ids = question.material_ids.split(",")
+                video_objs = MaterialVideo.objects.filter(id__in=video_ids)
+                videos = []
+                for video in video_objs:
+                    if video.video_link != "":
+                        videos.append(video.video_link)
+                materials[question.id].update({"videos": videos})
+
+    context = {"exam": exam, "questions": questions, "materials": materials, "exam_id": 4, "stage": get_stage(),
+               "obj_stage": 1}
+    return render(request, 'exam/index.html', context)
+
+
+@csrf_exempt
+def ajax_post_answer_simulate(request):
+    exam_id = request.POST['exam']
+    answer_raw = request.POST['answer']
+    answers = answer_raw.split(",")
+    correct_answers = []
+    exam = Exam.objects.get(id=exam_id)
+    question_ids = exam.questions.split(",")
+    for qid in question_ids:
+        question = Question.objects.get(id=qid)
+        correct_answers.append(question.correct_answer)
+
+    answer_score = 0
+    for k in range(len(answers)):
+        if answers[k] == correct_answers[k]:
+            answer_score += 1
+    return HttpResponse(answer_score)
+>>>>>>> master
 
 
 def entry(request):
     user_id = request.session.get('user_id', '0')
+<<<<<<< HEAD
     exam_id = request.session.get('exam_id', '4')
     # stage: 1-exam, 2-score
     stage = request.session.get('stage', '1')
 
     if user_id != '0':
         if stage == '1':
+=======
+    exam_id = request.session.get('exam_id', '1')
+    # stage: 1-exam, 2-score
+    stage_now = request.session.get('stage', '1')
+
+    if user_id != '0':
+        if stage_now == '1':
+>>>>>>> master
             return HttpResponseRedirect("answer?exam="+str(exam_id)+"&user="+str(user_id))
         else:
             return HttpResponseRedirect("score?exam="+str(exam_id)+"&user="+str(user_id))
 
     user_type = request.GET.get("user_type", "inner")
+<<<<<<< HEAD
     context = {"exam_id": 4, "user_type": user_type}
+=======
+    context = {"exam_id": exam_id, "user_type": user_type}
+>>>>>>> master
     return render(request, 'exam/entry.html', context)
 
 
@@ -80,6 +153,7 @@ def index(request):
                 materials[question.id].update({"videos": videos})
 
     # stage
+<<<<<<< HEAD
     obj_stage = 0
     if int(exam_id) == 4:
         obj_stage = 1
@@ -91,26 +165,65 @@ def index(request):
         obj_stage = 7
 
     context = {"exam": exam, "questions": questions, "materials": materials, "user": user_id, "account": account,
+=======
+    obj_stage = get_obj_stage(exam_id)
+
+    # 判断是否要跳转
+    if get_stage() > obj_stage and int(exam_id) < 3:
+        if account != '':
+            return HttpResponseRedirect('/exam/answer?exam='+str(int(exam_id)+1)+"&account="+account)
+        elif user_id != '0':
+            return HttpResponseRedirect('/exam/answer?exam='+str(int(exam_id)+1)+"&user="+user_id)
+
+    context = {"exam": exam, "questions": questions, "materials": materials, "user_id": user_id, "account": account,
+>>>>>>> master
                "exam_id": exam_id, "stage": get_stage(), "obj_stage": obj_stage}
     return render(request, 'exam/index.html', context)
+
+
+def get_obj_stage(exam_id):
+    obj_stage = 0
+    if int(exam_id) == 4:
+        obj_stage = 1
+    if int(exam_id) == 1:
+        obj_stage = 3
+    if int(exam_id) == 2:
+        obj_stage = 5
+    if int(exam_id) == 3:
+        obj_stage = 7
+    return obj_stage
 
 
 def score(request):
     exam_id = request.GET.get('exam', 1)
     account = request.GET.get('account', '')
     user_id = request.GET.get('user', 0)
+<<<<<<< HEAD
+=======
+    score_simu = request.GET.get('score', 0)
+>>>>>>> master
     request.session['stage'] = "2"
     if account != '':
         user = get_team_user(account)
         user_id = user.id
+<<<<<<< HEAD
 
     ob = Score.objects.get(exam_id=exam_id, user_id=user_id)
     count = 0
     right = 0
+=======
+    ob = None
+    if user_id != 0:
+        ob = Score.objects.get(exam_id=exam_id, user_id=user_id)
+
+>>>>>>> master
     if ob is not None:
         count = len(ob.answer.split(","))
         right = ob.score
-    context = {"count": count, "right": right, "exam_id": int(exam_id), "account": account, "user": user_id}
+    else:
+        count = 10
+        right = score_simu
+    context = {"count": count, "right": right, "exam_id": int(exam_id), "account": account, "user_id": user_id}
     return render(request, 'exam/score.html', context)
 
 
@@ -125,6 +238,7 @@ def statistics(request):
 
 @csrf_exempt
 def ajax_create_user(request):
+    name = request.POST.get('name', '')
     phone = request.POST.get('phone', '')
     user_type = request.POST.get('user_type', 0)
     address = request.POST.get('address', '')
@@ -132,6 +246,11 @@ def ajax_create_user(request):
     prov_city = request.POST.get('prov_city', '')
     job_title = request.POST.get('job_title', '')
     work_place = request.POST.get('work_place', '')
+<<<<<<< HEAD
+=======
+    work_place_level = request.POST.get('work_place_level', '')
+    work_year = request.POST.get('work_year', '')
+>>>>>>> master
 
     if account != '':
         # 是代表队
@@ -145,7 +264,12 @@ def ajax_create_user(request):
         user = User.objects.filter(phone=phone, user_type=user_type)
         if len(user) == 0:
             user = User.objects.create(phone=phone, user_type=user_type, address=address, prov_city=prov_city,
+<<<<<<< HEAD
                                        job_title=job_title, work_place=work_place)
+=======
+                                       job_title=job_title, work_place=work_place, work_place_level=work_place_level,
+                                       work_year=work_year, name=name)
+>>>>>>> master
         else:
             user = user[0]
         request.session['user_id'] = user.id
@@ -159,13 +283,14 @@ def ajax_post_answer(request):
     answer_raw = request.POST['answer']
     answers = answer_raw.split(",")
     correct_answers = []
-    exam = Exam.objects.get(id=1)
+    exam = Exam.objects.get(id=exam_id)
     question_ids = exam.questions.split(",")
     for qid in question_ids:
         question = Question.objects.get(id=qid)
         correct_answers.append(question.correct_answer)
 
     answer_score = get_pre_exam_score(exam_id, None, user)
+<<<<<<< HEAD
     for k in range(len(answers)):
         if answers[k] == correct_answers[k]:
             answer_score += 1
@@ -187,6 +312,31 @@ def ajax_post_answer(request):
         map_answers[str(i+1)] = answers[i]
     compute_score(exam_id, map_answers)
 
+=======
+    # 没超时才算分
+    if get_stage() == get_obj_stage(exam_id):
+        for k in range(len(answers)):
+            if answers[k] == correct_answers[k]:
+                answer_score += 1
+
+    # find if existed
+    user_score = Score.objects.filter(exam_id=exam_id, user_id=user)
+    if len(user_score) > 0:
+        user_score = user_score[0]
+        user_score.answer = answer_raw
+        user_score.score = answer_score
+        user_score.submitted = True
+        user_score.save()
+    else:
+        user_score = Score.objects.create(exam_id=exam_id, user_id=user, answer=answer_raw,
+                                          score=answer_score, submitted=True)
+    # wrong rank
+    map_answers = {}
+    for i in range(len(answers)):
+        map_answers[str(i+1)] = answers[i]
+    compute_score(exam_id, map_answers)
+
+>>>>>>> master
     return HttpResponse(user_score.id)
 
 
