@@ -132,13 +132,6 @@
             alert('手机号码不可不填');
             return;
         }
-<<<<<<< HEAD
-        var addr = $('#text-addr').val();
-        var job_title = $('#btn-year').text();
-        var province = $('#s1').val();
-        var city = $('#s2').val();
-        var work_place = $('#input-workplace').val();
-=======
         var name = $('#input-name').val();
         var addr = $('#text-addr').val();
         var job_title = $('#btn-year').text();
@@ -149,7 +142,6 @@
         var work_place = $('#input-workplace').val();
         var work_cell = $('#input-cell').val();
         work_place = work_place + ":" + work_cell;
->>>>>>> master
         var default_select = '请选择';
         if (job_title === default_select) {
             job_title = '';
@@ -163,12 +155,8 @@
         $.ajax({
             url: "/exam/ajax-create-user",
             method: "POST",
-<<<<<<< HEAD
-            data: {phone: phone, user_type: user_type, address: addr, prov_city: province+city, job_title: job_title, work_place: work_place},
-=======
             data: {phone: phone, user_type: user_type, address: addr, prov_city: province+city, job_title: job_title,
                 work_place: work_place, work_year: work_year, work_place_level: work_place_level, name: name},
->>>>>>> master
             success: function (msg) {
                 window.location.href = "answer?exam={{ exam_id }}&user="+msg;
             },

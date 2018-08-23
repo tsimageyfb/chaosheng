@@ -8,10 +8,7 @@ urlpatterns = [
     url(r'^score/$', views.score, name='score'),
     url(r'^statistics/$', views.statistics, name='statistics'),
     url(r'^stage/$', views.stage, name='stage'),
-<<<<<<< HEAD
-=======
     url(r'^simulate/$', views.simulate_exam, name='simulate'),
->>>>>>> master
 
     url(r'^ajax-create-user', views.ajax_create_user, name='create-user'),
     url(r'^ajax-post-answer', views.ajax_post_answer, name='post-answer'),

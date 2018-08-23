@@ -77,15 +77,12 @@ def get_pre_exam_score(exam_id, account, user_id):
     if len(pre_exam_score) > 0:
         pre_exam_score = pre_exam_score[0]
         return pre_exam_score.score
-<<<<<<< HEAD
-=======
     # 有一种可能：没参加半决赛但初赛有成绩
     if int(exam_id) == 3:
         pre_exam_score = Score.objects.filter(exam_id=1, user_id=user.id)
         if len(pre_exam_score) > 0:
             pre_exam_score = pre_exam_score[0]
             return pre_exam_score.score
->>>>>>> master
     return 0
 
 

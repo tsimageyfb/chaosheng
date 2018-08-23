@@ -18,29 +18,12 @@
     <h1>{{ exam.title }}</h1>
 </div>
 
-<<<<<<< HEAD
-{% if stage == obj_stage %}
-=======
 {% if stage == obj_stage or exam_id == 4 and stage >= 1 %}
->>>>>>> master
     <div id="div-exam" class="container text-center">
         {% for question in questions %}
             <hr>
             {% with index=forloop.counter %}
-<<<<<<< HEAD
-            <label style="font-size: 30px;color: #2e6da4">{{ index }}、</label>
             {% with material=materials|key:question.id %}
-            {% for option in material.options %}
-                {% with option_index=forloop.counter %}
-                <label class="radio-inline" style="font-size: 30px;border-radius: 1em">
-                    <input class="radio-option" type="radio"  value="{{ option_index }}" name="radio-question-{{ index }}" data-index="{{ index }}"><font style="font-size: 30px;color: #2e6da4">{{ option }}</font>
-                </label>
-                {% endwith %}
-            {% endfor %}
-            <br>
-=======
-            {% with material=materials|key:question.id %}
->>>>>>> master
             {% if question.material_type == 1 %}
                 {% for image in material.images %}
                     {% with item=forloop.counter %}
@@ -55,8 +38,6 @@
                     </video>
                 {% endfor %}
             {% endif %}
-<<<<<<< HEAD
-=======
             <br>
             <label style="font-size: 30px;color: #2e6da4">{{ index }}、</label>
             {% for option in material.options %}
@@ -68,7 +49,6 @@
             {% endfor %}
             <br>
 
->>>>>>> master
             {% endwith %}
             {% endwith %}
         {% endfor %}
@@ -176,8 +156,6 @@
                 data: {answer: answer.join(","), user: user_id, exam: exam_id},
                 success: function (msg) {
                     window.location.href = "/exam/score?exam="+exam_id+"&user="+user_id;
-<<<<<<< HEAD
-=======
                 },
                 error: function(jqXHR, textStatus) {
                     alert("Request failed: " + textStatus);
@@ -204,7 +182,6 @@
                 data: {answer: answer_simulate.join(","), exam: exam_id},
                 success: function (msg) {
                     window.location.href = "/exam/score?exam="+exam_id+"&score="+msg;
->>>>>>> master
                 },
                 error: function(jqXHR, textStatus) {
                     alert("Request failed: " + textStatus);
@@ -288,10 +265,6 @@
 
 <script>
     $('#btn-show-exam').on('click', function () {
-<<<<<<< HEAD
-       location.reload();
-=======
         location.reload();
->>>>>>> master
     });
 </script>

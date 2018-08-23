@@ -54,13 +54,9 @@ class User(models.Model):
 
     prov_city = models.CharField(max_length=64, default='', blank=True)  # 省市
     work_place = models.CharField(max_length=128, default='', blank=True)  # 工作单位
-<<<<<<< HEAD
-    job_title = models.CharField(max_length=32, default='', blank=True)  # 年资
-=======
     job_title = models.CharField(max_length=32, default='', blank=True)  # 职称
     work_place_level = models.CharField(max_length=24, default='', blank=True)  # 医院等级
     work_year = models.CharField(max_length=24, default='', blank=True)  # 工作年限
->>>>>>> master
 
     created_at = models.DateTimeField(auto_now_add=True, editable=False)
     updated_at = models.DateTimeField(auto_now=True, editable=False)
@@ -102,12 +98,9 @@ class QuestionStatistics(models.Model):
     created_at = models.DateTimeField(auto_now_add=True, editable=False)
     updated_at = models.DateTimeField(auto_now=True, editable=False)
 
-<<<<<<< HEAD
-=======
     class Meta:
         index_together = ['question_id']
 
->>>>>>> master
 
 class Stage(models.Model):
     # 阶段：0-模拟赛前，1-模拟赛开始，2-模拟赛结束，3-初赛开始，4-初赛结束，5-半决赛开始，6-半决赛结束，7-决赛开始，8-决赛结束

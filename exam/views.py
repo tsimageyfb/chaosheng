@@ -14,8 +14,6 @@ import django.utils.timezone as timezone
 import operator
 from .stage import get_stage, get_stage_begin_timestamp, set_stage, get_stage_name
 import time
-<<<<<<< HEAD
-=======
 
 
 def simulate_exam(request):
@@ -73,7 +71,6 @@ def ajax_post_answer_simulate(request):
         if answers[k] == correct_answers[k]:
             answer_score += 1
     return HttpResponse(answer_score)
->>>>>>> master
 
 
 def entry(request):
