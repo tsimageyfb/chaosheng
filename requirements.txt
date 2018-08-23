@@ -3,3 +3,4 @@ Pillow
 whitenoise==v3.1
 gunicorn
 psycopg2-binary
+gevent
