@@ -208,6 +208,8 @@ def ajax_create_user(request):
     work_place = request.POST.get('work_place', '')
     work_place_level = request.POST.get('work_place_level', '')
     work_year = request.POST.get('work_year', '')
+    gender = request.POST.get('gender', '')
+    age = request.POST.get('age', '')
 
     if account != '':
         # 是代表队
@@ -222,7 +224,7 @@ def ajax_create_user(request):
         if len(user) == 0:
             user = User.objects.create(phone=phone, user_type=user_type, address=address, prov_city=prov_city,
                                        job_title=job_title, work_place=work_place, work_place_level=work_place_level,
-                                       work_year=work_year, name=name)
+                                       work_year=work_year, name=name, gender=gender, age=age)
         else:
             user = user[0]
         request.session['user_id'] = user.id

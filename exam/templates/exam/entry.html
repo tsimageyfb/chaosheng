@@ -42,7 +42,12 @@
     <br>
     <label class="text-align">您的手机号码<font style="color: orangered;">*</font>: <input id="input-phone"></label>
     <br>
-    <label class="text-align">性别<font style="color: orangered;">*</font>: <input id="input-gender"></label>
+    <label class="text-align">性别<font style="color: orangered;">*</font>
+    </label> 
+    <select name="gender" id="select-gender">
+      <option>男</option>
+      <option>女</option>
+    </select>
     <br>
     <label class="text-align">年龄<font style="color: orangered;">*</font>: <input id="input-age"></label>
     <hr>
@@ -145,6 +150,8 @@
         var work_place_level = $('#btn-workplace-level').text();
         var work_place = $('#input-workplace').val();
         var work_cell = $('#input-cell').val();
+        var gender = $('#select-gender').val();
+        var age = $('#input-age').val();
         work_place = work_place + ":" + work_cell;
         var default_select = '请选择';
         if (job_title === default_select) {
@@ -160,7 +167,7 @@
             url: "/exam/ajax-create-user",
             method: "POST",
             data: {phone: phone, user_type: user_type, address: addr, prov_city: province+city, job_title: job_title,
-                work_place: work_place, work_year: work_year, work_place_level: work_place_level, name: name},
+                work_place: work_place, work_year: work_year, work_place_level: work_place_level, name: name, gender:gender, age:age},
             success: function (msg) {
                 window.location.href = "answer?exam={{ exam_id }}&user="+msg;
             },

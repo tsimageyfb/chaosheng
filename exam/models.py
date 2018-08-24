@@ -51,7 +51,9 @@ class User(models.Model):
     user_type = models.IntegerField(default=0)  # 0-各代表队和robot，1-场内观众，2-场外观众
     phone = models.CharField(max_length=18, default='', blank=True)
     address = models.CharField(max_length=128, default='', blank=True)
-
+    age = models.CharField(max_length=20, default='', blank=True)
+    gender = models.CharField(max_length=20, default='', blank=True)
+    
     prov_city = models.CharField(max_length=64, default='', blank=True)  # 省市
     work_place = models.CharField(max_length=128, default='', blank=True)  # 工作单位
     job_title = models.CharField(max_length=32, default='', blank=True)  # 职称
