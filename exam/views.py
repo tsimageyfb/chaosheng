@@ -92,10 +92,13 @@ def entry(request):
     # stage: 1-exam, 2-score
     stage_now = request.session.get('stage', '1')
     if user_id != '0':
-        if stage_now == '1':
-            return HttpResponseRedirect("answer?exam="+str(exam_id)+"&user="+str(user_id))
-        else:
-            return HttpResponseRedirect("score?exam="+str(exam_id)+"&user="+str(user_id))
+        check_user = User.objects.filter(id=user_id)
+        if len(check_user) > 0:
+            # 用户存在才跳缓存
+            if stage_now == '1':
+                return HttpResponseRedirect("answer?exam="+str(exam_id)+"&user="+str(user_id))
+            else:
+                return HttpResponseRedirect("score?exam="+str(exam_id)+"&user="+str(user_id))
 
     user_type = request.GET.get("user_type", "inner")
     context = {"exam_id": exam_id, "user_type": user_type}
