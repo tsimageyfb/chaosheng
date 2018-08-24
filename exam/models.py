@@ -70,7 +70,7 @@ class User(models.Model):
 class Score(models.Model):
     exam_id = models.IntegerField()
     user_id = models.IntegerField()
-    answer = models.CharField(max_length=512, default='', blank=True)
+    answer = models.CharField(max_length=1024, default='', blank=True)
     score = models.IntegerField(default=0, blank=True)
     begin_at = models.DateTimeField(auto_now_add=True, editable=True)
     elapsed_seconds = models.IntegerField(default=0, blank=True)
