@@ -16,7 +16,13 @@ from .stage import get_stage, get_stage_begin_timestamp, set_stage, get_stage_na
 import time
 
 
+def simulate_entry(request):
+    context = {}
+    return render(request, 'exam/simulate_entry.html', context)
+
+
 def simulate_exam(request):
+    user_id = request.GET['user']
     # exam
     exam = Exam.objects.get(id=4)
 
@@ -50,7 +56,7 @@ def simulate_exam(request):
                 materials[question.id].update({"videos": videos})
 
     context = {"exam": exam, "questions": questions, "materials": materials, "exam_id": 4, "stage": get_stage(),
-               "obj_stage": 1}
+               "obj_stage": 1, "user_id": user_id}
     return render(request, 'exam/index.html', context)
 
 
@@ -225,6 +231,24 @@ def ajax_create_user(request):
                                        work_year=work_year, name=name)
         else:
             user = user[0]
+            if name != '':
+                user.name = name
+            if user_type != 0:
+                user.user_type = user_type
+            if address != '':
+                user.address = address
+            if prov_city != '':
+                user.prov_city = prov_city
+            if job_title != '':
+                user.job_title = job_title
+            if work_place != '':
+                user.work_place = work_place
+            if work_place_level != '':
+                user.work_place_level = work_place_level
+            if work_year != '':
+                user.work_year = work_year
+            user.save()
+
         request.session['user_id'] = user.id
     return HttpResponse(user.id)
 

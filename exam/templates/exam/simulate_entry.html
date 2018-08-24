@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>模拟答题入口</title>
+    {% load staticfiles %}
+    <link rel="stylesheet" type="text/css" href="{% static 'exam/bootstrap.min.css' %}" />
+    <script src="{% static 'exam/jquery-3.2.1.min.js' %}"></script>
+    <script src="{% static 'exam/bootstrap.min.js' %}"></script>
+    <script src="{% static 'exam/highcharts.js' %}"></script>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+</head>
+
+<body>
+<div class="container text-center">
+    <h1>参加模拟赛</h1>
+</div>
+<div class="container text-center">
+    <hr>
+    <label class="radio-inline" style="font-size: 20px;border-radius: 1em">
+        <input class="radio-option" type="radio"  value="1" name="radio-audience-type"><font style="font-size: 20px;color: #2e6da4">场内观众</font>
+    </label>
+    <label class="radio-inline" style="font-size: 20px;border-radius: 1em">
+        <input class="radio-option" type="radio"  value="2" name="radio-audience-type"><font style="font-size: 20px;color: #2e6da4">场外观众</font>
+    </label>
+    <br>
+    <label class="text-align">您的手机号码<font style="color: orangered;">*</font>: <input id="input-phone"></label>
+    <hr>
+</div>
+
+<div class="container text-center">
+    <button id="btn-submit" class="btn btn-primary">开始答题</button>
+</div>
+
+
+</body>
+
+</html>
+
+<script>
+    $('#btn-submit').on('click', function () {
+        var radio_check = $("[name='radio-audience-type']").filter(":checked");
+        var user_type = radio_check.val();
+        if (radio_check.length === 0) {
+            user_type = "0";
+        }
+        var phone = $('#input-phone').val();
+        if (user_type === "0") {
+            alert("请选择观众类型");
+            return;
+        }
+        if (phone === "") {
+            alert("请填写手机号");
+            return;
+        }
+        $.ajax({
+            url: "/exam/ajax-create-user",
+            method: "POST",
+            data: {phone: phone, user_type: user_type},
+            success: function (msg) {
+                window.location.href = "/exam/simulate/answer?user="+msg;
+            },
+            error: function(jqXHR, textStatus) {
+                alert("Request failed: " + textStatus);
+            }
+        });
+    })
+
+</script>
