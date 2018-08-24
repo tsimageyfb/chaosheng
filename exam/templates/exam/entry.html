@@ -51,7 +51,7 @@
     <br>
     <label class="text-align">年龄<font style="color: orangered;">*</font>: <input id="input-age"></label>
     <hr>
-    <label class="text-align">所在省市：</label>
+    <label class="text-align">所在省市<font style="color: orangered;">*</font>:  </label>
     <select name="China_sf" id="s1">
       <option></option>
     </select>
@@ -59,12 +59,12 @@
       <option></option>
     </select>
     <br>
-    <label class="text-align">您的工作单位: <input id="input-workplace"></label>
+    <label class="text-align">您的工作单位<font style="color: orangered;">*</font>:  <input id="input-workplace"></label>
     <br>
-    <label class="text-align">所在科室: <input id="input-cell" style="width: 100px"></label>
-    <label>从事年限: <input id="input-year"  style="width: 33px"></label>
+    <label class="text-align">所在科室<font style="color: orangered;">*</font>:  <input id="input-cell" style="width: 100px"></label>
+    <label>从事年限<font style="color: orangered;">*</font>:  <input id="input-year"  style="width: 33px"></label>
     <br>
-    <label class="text-align">您的职称: </label>
+    <label class="text-align">您的职称<font style="color: orangered;">*</font>:  </label>
     <div class="dropdown" style="display: inline">
         <button id="btn-year" class="btn btn-default btn-xs" type="button" data-toggle="dropdown" data-key="">请选择<span class="caret"></span></button>
         <ul class="dropdown-menu">
@@ -75,7 +75,7 @@
             <li class="li-year" data-key="5"><a>其他</a></li>
         </ul>
     </div>
-    <label style="margin-left: 10px">医院级别: </label>
+    <label style="margin-left: 10px">医院级别<font style="color: orangered;">*</font>:  </label>
     <div class="dropdown" style="display: inline">
         <button id="btn-workplace-level" class="btn btn-default btn-xs" type="button" data-toggle="dropdown" data-key="">请选择<span class="caret"></span></button>
         <ul class="dropdown-menu">
@@ -142,16 +142,59 @@
             return;
         }
         var name = $('#input-name').val();
+        if (name === '') {
+            alert('姓名不可不填');
+            return;
+        }
         var addr = $('#text-addr').val();
         var job_title = $('#btn-year').text();
+
+        if (job_title === '请选择') {
+            alert('职称不可不填');
+            return;
+        }
         var work_year = $('#input-year').val();
+        if (work_year === '') {
+            alert('工作年限不可不填');
+            return;
+        }
         var province = $('#s1').val();
+
+        if (province === '请选择') {
+            alert('省份不可不填');
+            return;
+        }
         var city = $('#s2').val();
+        if (city === '') {
+            alert('城市不可不填');
+            return;
+        }
         var work_place_level = $('#btn-workplace-level').text();
+
+        if (work_place_level === '请选择') {
+            alert('医院级别不可不填');
+            return;
+        }
         var work_place = $('#input-workplace').val();
+        if (work_place === '') {
+            alert('您的工作单位不可不填');
+            return;
+        }
         var work_cell = $('#input-cell').val();
+        if (work_cell === '') {
+            alert('所在科室不可不填');
+            return;
+        }
         var gender = $('#select-gender').val();
+        if (gender === '') {
+            alert('性别不可不填');
+            return;
+        }
         var age = $('#input-age').val();
+        if (age === '') {
+            alert('年龄不可不填');
+            return;
+        }
         work_place = work_place + ":" + work_cell;
         var default_select = '请选择';
         if (job_title === default_select) {
@@ -163,11 +206,12 @@
         if (city === default_select) {
             city = '';
         }
+        var data = {phone: phone, user_type: user_type, address: addr, prov_city: province+city, job_title: job_title,
+                work_place: work_place, work_year: work_year, work_place_level: work_place_level, name: name, gender:gender, age:age}
         $.ajax({
             url: "/exam/ajax-create-user",
             method: "POST",
-            data: {phone: phone, user_type: user_type, address: addr, prov_city: province+city, job_title: job_title,
-                work_place: work_place, work_year: work_year, work_place_level: work_place_level, name: name, gender:gender, age:age},
+            data: data,
             success: function (msg) {
                 window.location.href = "answer?exam={{ exam_id }}&user="+msg;
             },
