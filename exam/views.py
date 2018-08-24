@@ -98,7 +98,9 @@ def entry(request):
             if stage_now == '1':
                 return HttpResponseRedirect("answer?exam="+str(exam_id)+"&user="+str(user_id))
             else:
-                return HttpResponseRedirect("score?exam="+str(exam_id)+"&user="+str(user_id))
+                check_score = Score.objects.filter(exam_id=exam_id, user_id=user_id)
+                if len(check_score) > 0:
+                    return HttpResponseRedirect("score?exam="+str(exam_id)+"&user="+str(user_id))
 
     user_type = request.GET.get("user_type", "inner")
     context = {"exam_id": exam_id, "user_type": user_type}
