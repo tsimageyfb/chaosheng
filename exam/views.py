@@ -396,7 +396,7 @@ def team_get_rank(request):
         if len(team_sore) != 0:
             team_sore = team_sore[0]
             rank.append({"name": NAME_TEAMS[account], "order": 0, "score": team_sore.score})
-        elif exam_id == 3:
+        elif int(exam_id) == 3:
             # 决赛要返回所有代表队成绩
             team_sore = Score.objects.filter(exam_id=2, user_id=team_user.id)
             if len(team_sore) == 0:
