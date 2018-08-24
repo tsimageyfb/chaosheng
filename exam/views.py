@@ -103,7 +103,7 @@ def entry(request):
 
 
 def entry_team(request):
-    context = {"exam_id": 4, "team": NAME_TEAMS}
+    context = {"exam_id": 1, "team": NAME_TEAMS}
     return render(request, 'exam/team.html', context)
 
 
