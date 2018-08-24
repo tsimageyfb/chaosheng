@@ -17,6 +17,9 @@ import time
 
 
 def simulate_entry(request):
+    # if init page, clean cache
+    if get_stage() == 0:
+        request.session.clear()
     context = {}
     return render(request, 'exam/simulate_entry.html', context)
 
@@ -80,11 +83,14 @@ def ajax_post_answer_simulate(request):
 
 
 def entry(request):
+    # if init page, clean cache
+    if get_stage() == 0:
+        request.session.clear()
+
     user_id = request.session.get('user_id', '0')
     exam_id = request.session.get('exam_id', '1')
     # stage: 1-exam, 2-score
     stage_now = request.session.get('stage', '1')
-
     if user_id != '0':
         if stage_now == '1':
             return HttpResponseRedirect("answer?exam="+str(exam_id)+"&user="+str(user_id))
@@ -106,7 +112,8 @@ def index(request):
     user_id = request.GET.get('user', '0')
     account = request.GET.get('account', '')
     exam_id = request.GET['exam']
-    if int(exam_id) > 0:
+    if int(exam_id) > 0 and int(exam_id) != 4:
+        # 模拟卷不要写入缓存！
         request.session['exam_id'] = str(exam_id)
         request.session['stage'] = "1"
 
