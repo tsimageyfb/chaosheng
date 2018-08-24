@@ -106,7 +106,8 @@ def index(request):
     user_id = request.GET.get('user', '0')
     account = request.GET.get('account', '')
     exam_id = request.GET['exam']
-    if int(exam_id) > 0:
+    if int(exam_id) > 0 and int(exam_id) != 4:
+        # 模拟卷不要写入缓存！
         request.session['exam_id'] = str(exam_id)
         request.session['stage'] = "1"
 
