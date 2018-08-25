@@ -98,7 +98,9 @@ def entry(request):
             if stage_now == '1':
                 return HttpResponseRedirect("answer?exam="+str(exam_id)+"&user="+str(user_id))
             else:
-                return HttpResponseRedirect("score?exam="+str(exam_id)+"&user="+str(user_id))
+                check_score = Score.objects.filter(exam_id=exam_id, user_id=user_id)
+                if len(check_score) > 0:
+                    return HttpResponseRedirect("score?exam="+str(exam_id)+"&user="+str(user_id))
 
     user_type = request.GET.get("user_type", "inner")
     context = {"exam_id": exam_id, "user_type": user_type}
@@ -185,7 +187,8 @@ def score(request):
     account = request.GET.get('account', '')
     user_id = request.GET.get('user', 0)
     score_simu = request.GET.get('score', 0)
-    request.session['stage'] = "2"
+    if exam_id != "4":
+        request.session['stage'] = "2"
     if account != '':
         user = get_team_user(account)
         user_id = user.id
