@@ -187,7 +187,7 @@ def score(request):
     account = request.GET.get('account', '')
     user_id = request.GET.get('user', 0)
     score_simu = request.GET.get('score', 0)
-    if exam_id != 4:
+    if exam_id != "4":
         request.session['stage'] = "2"
     if account != '':
         user = get_team_user(account)

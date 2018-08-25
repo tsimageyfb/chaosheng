@@ -49,15 +49,15 @@
         text: '得分：'+ right
     },
     tooltip: {
-        pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+        pointFormat: ''
     },
     plotOptions: {
         pie: {
-            allowPointSelect: true,
+            allowPointSelect: false,
             cursor: 'pointer',
             dataLabels: {
                 enabled: false,
-                format: '<b>{point.name}</b>: {point.percentage:.1f} %',
+                format: '',
                 style: {
                     color: (Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black'
                 }
