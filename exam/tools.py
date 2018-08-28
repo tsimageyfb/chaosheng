@@ -115,6 +115,27 @@ def compute_score(exam_id, answers_dic):
     return score
 
 
+def compute_answer(exam_id, answers_dic):
+    exam = Exam.objects.get(id=exam_id)
+    question_ids = exam.questions.split(",")
+    answers_right = []
+    stat = []
+
+    for qid in question_ids:
+        question = Question.objects.get(id=qid)
+        answers_right.append(question.correct_answer)
+
+    for i in range(1, len(answers_right)+1):
+        if str(i) in answers_dic:
+            if answers_dic[str(i)] == answers_right[i-1]:
+                stat.append(1)
+            else:
+                stat.append(2)
+        else:
+            stat.append(0)
+    return stat
+
+
 def get_robot_user():
     robot_user = User.objects.filter(account=ACCOUNT_ROBOT)
     if len(robot_user) == 0:

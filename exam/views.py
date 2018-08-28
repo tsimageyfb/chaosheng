@@ -9,11 +9,12 @@ import json
 from .models import Exam, Question, MaterialImage, User, Score, MaterialVideo, QuestionStatistics
 from .tools import compute_score, get_robot_user, get_each_team_progress, get_team_user, ACCOUNT_TEAMS, ACCOUNT_ROBOT
 from .tools import AUDIENCE_KEY, AUDIENCE_TYPE, get_audience_rank, get_audience_progress, NAME_TEAMS, get_pre_exam_score
-from .tools import get_pre_exam_winner
+from .tools import get_pre_exam_winner, compute_answer
 import django.utils.timezone as timezone
 import operator
 from .stage import get_stage, get_stage_begin_timestamp, set_stage, get_stage_name
 import time
+from django.forms.models import model_to_dict
 
 
 def simulate_entry(request):
@@ -635,3 +636,79 @@ def sub_stage(request):
     if int(stage_now) > 0:
         set_stage(int(stage_now) - 1)
     return HttpResponse("ok")
+
+
+def change_answer_list_to_dict(raw_str):
+    result = {}
+    raws = raw_str.split(",")
+    i = 1
+    for raw in raws:
+        result[str(i)] = raw
+        i += 1
+    return result
+
+
+@csrf_exempt
+def all_users_statistics(request):
+    users = User.objects.all()
+    data = {}
+    stat = []
+    for user in users:
+        if user.user_type == 0:
+            if user.account == 'robot':
+                display = 'AI'
+            else:
+                display = NAME_TEAMS[user.account]
+        else:
+            display = user.phone
+
+        # 统计分数和回答情况
+        score_obj = None
+        answer_stat = []
+        score_obj_1 = Score.objects.filter(exam_id=1, user_id=user.id)
+        if len(score_obj_1) > 0:
+            score_obj = score_obj_1[0]
+            if user.user_type == 0:
+                answer_dic = json.loads(score_obj.answer)
+            else:
+                answer_dic = change_answer_list_to_dict(score_obj.answer)
+            answer_stat += compute_answer(1, answer_dic)
+        else:
+            answer_stat += [0 for i in range(50)]
+
+        score_obj_2 = Score.objects.filter(exam_id=2, user_id=user.id)
+        if len(score_obj_2) > 0:
+            score_obj = score_obj_2[0]
+            if user.user_type == 0:
+                answer_dic = json.loads(score_obj.answer)
+            else:
+                answer_dic = change_answer_list_to_dict(score_obj.answer)
+            answer_stat += compute_answer(2, answer_dic)
+        else:
+            answer_stat += [0 for i in range(30)]
+
+        score_obj_3 = Score.objects.filter(exam_id=3, user_id=user.id)
+        if len(score_obj_3) > 0:
+            score_obj = score_obj_3[0]
+            if user.user_type == 0:
+                answer_dic = json.loads(score_obj.answer)
+            else:
+                answer_dic = change_answer_list_to_dict(score_obj.answer)
+            answer_stat += compute_answer(3, answer_dic)
+        else:
+            answer_stat += [0 for i in range(20)]
+
+        if score_obj is not None:
+            point = score_obj.score
+        else:
+            point = 0
+
+        stat.append({"user_id": user.id, "user_type": user.user_type, "phone": display, "score": point,
+                     "answer": answer_stat, "user_info": model_to_dict(user)})
+
+    # 排序
+    stat = sorted(stat, key=operator.itemgetter('score'), reverse=True)
+    for i in range(len(stat)):
+        stat[i]['order'] = i + 1
+    data['stat'] = stat
+    return http.wrap_ok_response(data)

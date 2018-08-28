@@ -36,4 +36,6 @@ urlpatterns = [
     url(r'^set-stage', views.req_set_stage, name='set-stage'),
     url(r'^ajax-add-stage', views.add_stage, name='add-stage'),
     url(r'^ajax-sub-stage', views.sub_stage, name='sub-stage'),
+
+    url(r'^all-users-statistics', views.all_users_statistics, name='statistics'),
 ]
